@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import type { ReactNode } from "react";
-import Bottombar from "@/components/common/Bottombar";
 import Topbar from "@/components/common/Topbar";
 import { Toaster } from "react-hot-toast";
 
@@ -33,7 +32,6 @@ export default function MainLayout({ children }: { children: ReactNode }) {
                 <div className="min-h-full mx-auto flex w-full max-w-7xl flex-1 flex-col gap-8 px-4 py-8 sm:px-6 lg:gap-10 lg:px-8 lg:py-10">
                     {children}
                 </div>
-                <Bottombar />
                 <Toaster position="top-right" />
             </body>
         </html>

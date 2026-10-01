@@ -12,6 +12,8 @@ export default function useMatchForm() {
     const [maxPlayers, setMaxPlayers] = useState(0);
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
+    const [authorName, setAuthorName] = useState("");
+    const [authorEmail, setAuthorEmail] = useState("");
 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -19,8 +21,19 @@ export default function useMatchForm() {
         event.preventDefault();
         if (isSubmitting) return;
 
-        if (!matchName.trim() || maxPlayers < 2 || !date || !time) {
-            toast.error("모든 항목을 올바르게 입력해주세요.");
+        const trimmedAuthorName = authorName.trim();
+        const trimmedAuthorEmail = authorEmail.trim();
+
+        if (
+            !matchName.trim() ||
+            !Number.isInteger(maxPlayers) ||
+            maxPlayers < 2 ||
+            !date ||
+            !time ||
+            !trimmedAuthorName ||
+            !trimmedAuthorEmail
+        ) {
+            toast.error("매치 정보와 작성자 정보를 올바르게 입력해주세요.");
             return;
         }
 
@@ -31,6 +44,10 @@ export default function useMatchForm() {
                 title: matchName.trim(),
                 maxPlayers,
                 startAt: `${date}T${time}`,
+                author: {
+                    name: trimmedAuthorName,
+                    email: trimmedAuthorEmail,
+                },
             });
             toast.success("매치가 생성되었어요.");
             router.push("/match");
@@ -52,6 +69,10 @@ export default function useMatchForm() {
         setDate,
         time,
         setTime,
+        authorName,
+        setAuthorName,
+        authorEmail,
+        setAuthorEmail,
         isSubmitting,
         handleSubmit,
     };

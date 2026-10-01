@@ -14,6 +14,10 @@ export default function MatchForm() {
         setDate,
         time,
         setTime,
+        authorName,
+        setAuthorName,
+        authorEmail,
+        setAuthorEmail,
         isSubmitting,
         handleSubmit,
     } = useMatchForm();
@@ -78,6 +82,36 @@ export default function MatchForm() {
                             name="time"
                             value={time}
                             onChange={(event) => setTime(event.target.value)}
+                            required
+                            className="w-full rounded-lg bg-white p-4 text-black"
+                        />
+                    </label>
+                </div>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <label className="flex flex-col gap-2">
+                        작성자 이름
+                        <input
+                            type="text"
+                            name="authorName"
+                            value={authorName}
+                            onChange={(event) =>
+                                setAuthorName(event.target.value)
+                            }
+                            placeholder="작성자 이름을 입력해 주세요."
+                            required
+                            className="w-full rounded-lg bg-white p-4 text-black"
+                        />
+                    </label>
+                    <label className="flex flex-col gap-2">
+                        작성자 이메일
+                        <input
+                            type="email"
+                            name="authorEmail"
+                            value={authorEmail}
+                            onChange={(event) =>
+                                setAuthorEmail(event.target.value)
+                            }
+                            placeholder="작성자 이메일을 입력해 주세요."
                             required
                             className="w-full rounded-lg bg-white p-4 text-black"
                         />
