@@ -1,11 +1,12 @@
 import Image, { StaticImageData } from "next/image";
+import Link from "next/link";
 
 type HoloCardProps = {
     title: string;
     description: string;
     image: StaticImageData;
     imageAlt?: string;
-    action?: () => void;
+    router: string;
 };
 
 export default function HoloCard({
@@ -13,12 +14,12 @@ export default function HoloCard({
     description,
     image,
     imageAlt = "",
-    action,
+    router,
 }: HoloCardProps) {
     return (
-        <div
+        <Link
+            href={router}
             className="holo-card flex min-h-72 flex-col gap-3 rounded-lg bg-white/80 p-6 shadow-md sm:min-h-80 sm:gap-4 sm:p-8"
-            onClick={action}
         >
             <h2 className="text-3xl font-bold sm:text-4xl">{title}</h2>
             <p className="text-lg sm:text-xl">{description}</p>
@@ -31,6 +32,6 @@ export default function HoloCard({
                     className="h-auto max-h-36 w-auto max-w-full object-contain sm:max-h-44"
                 />
             </div>
-        </div>
+        </Link>
     );
 }

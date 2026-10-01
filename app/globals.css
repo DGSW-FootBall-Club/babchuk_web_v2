@@ -6,6 +6,14 @@
     color-scheme: light;
 }
 
+img {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+}
+
 @theme inline {
     --color-background: var(--background);
     --color-foreground: var(--foreground);

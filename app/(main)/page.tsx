@@ -13,12 +13,14 @@ export default function Home() {
                     description="축구 경기를 생성하세요!"
                     image={createMatch}
                     imageAlt="매치 생성"
+                    router={"/match/create"}
                 />
                 <HoloCard
                     title="매치 보기"
                     description="축구 경기에 참가하세요!"
                     image={viewMatch}
                     imageAlt="매치 참가"
+                    router={"/match"}
                 />
                 <section className="flex flex-col gap-4 md:col-span-2 xl:col-span-1">
                     <h1 className="text-2xl font-bold sm:text-3xl">
