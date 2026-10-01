@@ -1,5 +1,6 @@
 import logo from "@/public/logo.svg";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Topbar() {
     return (
@@ -16,9 +17,11 @@ export default function Topbar() {
                     />
                 </div>
                 <nav className="flex justify-end gap-4 text-sm font-bold sm:text-base">
-                    <button type="button" className="cursor-pointer">
-                        로그인
-                    </button>
+                    <Link href="/login">
+                        <button type="button" className="cursor-pointer">
+                            로그인
+                        </button>
+                    </Link>
                 </nav>
             </div>
         </header>
