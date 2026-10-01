@@ -6,8 +6,8 @@ import HistoryCard from "@/components/home/HistoryCard";
 
 export default function Home() {
     return (
-        <div className="w-full flex flex-col items-center justify-center p-24 gap-12">
-            <section className="w-[92%] flex h-180 items-center justify-between">
+        <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-8 px-4 py-8 sm:px-6 lg:gap-10 lg:px-8 lg:py-10">
+            <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
                 <HoloCard
                     title="매치 생성"
                     description="축구 경기를 생성하세요!"
@@ -20,10 +20,11 @@ export default function Home() {
                     image={viewMatch}
                     imageAlt="매치 참가"
                 />
-                {/**새로 섹션 */}
-                <section className="w-100 flex flex-col h-180 gap-4">
-                    <h1 className="text-3xl font-bold">다가오는 일정</h1>
-                    <div className="h-full flex flex-col justify-between">
+                <section className="flex flex-col gap-4 md:col-span-2 xl:col-span-1">
+                    <h1 className="text-2xl font-bold sm:text-3xl">
+                        다가오는 일정
+                    </h1>
+                    <div className="flex flex-1 flex-col gap-3">
                         <MatchCard redteam={10} blueteam={10} status="full" />
                         <MatchCard redteam={10} blueteam={10} status="full" />
                         <MatchCard
@@ -35,6 +36,6 @@ export default function Home() {
                 </section>
             </section>
             <HistoryCard />
-        </div>
+        </main>
     );
 }

@@ -14,36 +14,50 @@ export default function MatchCard({
     status,
 }: HoloCardProps) {
     return (
-        <div className="flex items-center justify-between gap-4 rounded-lg bg-white p-10 shadow-md relative cursor-pointer">
+        <div className="relative flex min-h-32 items-center justify-between gap-2 rounded-lg bg-white p-4 pt-8 shadow-md sm:gap-4 sm:p-5 sm:pt-8">
             {status === "full" && (
-                <p className="absolute top-0 left-0 flex h-6 w-16 items-center justify-center rounded-lg bg-[#C33431] text-sm font-bold text-white">
+                <p className="absolute left-0 top-0 flex h-6 w-16 items-center justify-center rounded-tl-lg rounded-br-lg bg-[#C33431] text-xs font-bold text-white">
                     가득참
                 </p>
             )}
             {status === "pending" && (
-                <p className="absolute top-0 left-0 flex h-6 w-16 items-center justify-center rounded-lg bg-[#009655] text-sm font-bold text-white">
+                <p className="absolute left-0 top-0 flex h-6 w-16 items-center justify-center rounded-tl-lg rounded-br-lg bg-[#009655] text-xs font-bold text-white">
                     모집중
                 </p>
             )}
             <div className="flex flex-col items-center justify-center gap-2 ">
-                <Image src={red_team} alt="redteam" width={50} height={50} />
+                <Image
+                    src={red_team}
+                    alt="redteam"
+                    width={50}
+                    height={50}
+                    className="h-10 w-10 sm:h-12 sm:w-12"
+                />
                 <div className="flex flex-col items-center justify-center gap-2">
-                    <p>레드팀</p>
-                    <span>{redteam}명</span>
+                    <p className="text-sm font-medium sm:text-base">레드팀</p>
+                    <span className="text-sm text-gray-600">{redteam}명</span>
                 </div>
             </div>
             {/**날짜  */}
             <div className="flex flex-col items-center justify-center gap-2">
-                <p className="text-lg font-bold">2023.06.30</p>
-                <p className="text-sm bg-gray-500 p-2 rounded-xl text-white">
+                <p className="text-center text-sm font-bold sm:text-base">
+                    2023.06.30
+                </p>
+                <p className="rounded-md bg-gray-600 px-2 py-1 text-xs text-white sm:text-sm">
                     오후 3:00
                 </p>
             </div>
             <div className="flex flex-col items-center justify-center gap-2">
-                <Image src={blue_team} alt="blueteam" width={50} height={50} />
+                <Image
+                    src={blue_team}
+                    alt="blueteam"
+                    width={50}
+                    height={50}
+                    className="h-10 w-10 sm:h-12 sm:w-12"
+                />
                 <div className="flex flex-col items-center justify-center gap-2">
-                    <p>블루팀</p>
-                    <span>{blueteam}명</span>
+                    <p className="text-sm font-medium sm:text-base">블루팀</p>
+                    <span className="text-sm text-gray-600">{blueteam}명</span>
                 </div>
             </div>
         </div>
