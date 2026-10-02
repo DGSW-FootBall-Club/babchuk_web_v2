@@ -51,9 +51,7 @@ export default function MatchDetail({ match }: MatchDetailProps) {
             </div>
 
             <div className="mt-2 rounded-lg p-1 sm:p-3">
-                <p className="mb-3 text-sm font-semibold text-black">
-                    참여 인원
-                </p>
+                <p className="text-sm font-semibold text-black">참여 인원</p>
 
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                     <div className="rounded-lg p-2 sm:p-3">
