@@ -1,6 +1,8 @@
-import dgsw1 from "@/public/dgsw1.svg";
-import dgsw2 from "@/public/dgsw2.jpeg";
-import dgsw3 from "@/public/dgsw3.jpeg";
+import dgsw1 from "@/public/dgsw1.webp";
+import dgsw2 from "@/public/dgsw2.webp";
+import dgsw3 from "@/public/dgsw3.webp";
+import dgsw4 from "@/public/dgsw4.webp";
+import dgsw5 from "@/public/dgsw5.webp";
 import HistoryGalleryItem from "@/components/history/HistoryGalleryItem";
 import ScrollReveal from "@/components/history/ScrollReveal";
 
@@ -20,6 +22,18 @@ const historyItems = [
         title: "2026년 대소고 FC 축신짤 사진",
         subtitle:
             "축신짤 사진은 축신짤 사진이며, 동경호의 감아차기를 보여준다.",
+    },
+    {
+        image: dgsw4,
+        title: "2026년 대소고 축제 및 물놀이",
+        subtitle:
+            "축제 및 물놀이 사진은 축제 및 물놀이 사진이며, 모두가 정상적이지 않다.",
+    },
+    {
+        image: dgsw5,
+        title: "2026년 김은찬 및 박진용의 마지막 축구 기념사진",
+        subtitle:
+            "김은찬 및 박진용의 마지막 축구 기념사진은 김은찬 및 박진용의 마지막 축구 기념사진이며, 취업에 성공했다.",
     },
 ];
 
@@ -137,7 +151,7 @@ export default function History() {
                         <div className="flex w-full flex-col gap-8 sm:gap-10">
                             {historyItems.map((item, index) => (
                                 <ScrollReveal
-                                    key={item.title}
+                                    key={item.image.src}
                                     delay={index * 120}
                                 >
                                     <HistoryGalleryItem

@@ -217,9 +217,93 @@ img {
     transition: left 1s ease;
 }
 
+.history-card.premium-card {
+    background: #000;
+}
+
+.history-card-photo-window {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.history-card-photo-track {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.history-card-photo-panel {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+}
+
+.history-card-photo-panel img {
+    object-fit: cover;
+    object-position: center;
+}
+
+.history-card-photo-panel::after {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.45),
+        rgba(0, 0, 0, 0.12),
+        rgba(0, 0, 0, 0.45)
+    );
+    content: "";
+}
+
+.history-card:hover .history-card-photo-panel,
+.history-card:focus-visible .history-card-photo-panel {
+    animation: history-photo-fade 900ms ease-in-out both;
+}
+
+.history-card:hover .history-card-photo-panel:nth-child(2),
+.history-card:focus-visible .history-card-photo-panel:nth-child(2) {
+    animation-delay: 700ms;
+}
+
+.history-card:hover .history-card-photo-panel:nth-child(3),
+.history-card:focus-visible .history-card-photo-panel:nth-child(3) {
+    animation-delay: 1400ms;
+}
+
+.history-card-label {
+    text-shadow: 0 1px 12px rgba(0, 0, 0, 0.8);
+}
+
+@keyframes history-photo-fade {
+    0% {
+        opacity: 0;
+    }
+
+    18% {
+        opacity: 0.9;
+    }
+
+    78% {
+        opacity: 0.9;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .premium-card:hover::before {
         transition: none;
+    }
+
+    .history-card:hover .history-card-photo-panel,
+    .history-card:focus-visible .history-card-photo-panel {
+        animation: none;
+        opacity: 0;
     }
 }
 

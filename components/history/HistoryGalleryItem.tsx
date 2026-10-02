@@ -20,8 +20,10 @@ export default function HistoryGalleryItem({
             <div className="history-gallery-frame relative h-70 w-full overflow-hidden sm:h-80">
                 <Image
                     src={image}
-                    alt={alt ?? title}
+                    alt={alt ?? (title || "대소고 FC 활동 사진")}
                     fill
+                    placeholder="blur"
+                    loading="lazy"
                     className={`history-gallery-image object-cover ${imageClassName}`}
                     style={{ objectPosition: "center 58%" }}
                     sizes="(max-width: 768px) 100vw, 768px"
@@ -29,9 +31,11 @@ export default function HistoryGalleryItem({
             </div>
 
             <div className="flex flex-col gap-1 py-4">
-                <h2 className="text-lg font-semibold text-white sm:text-2xl">
-                    {title}
-                </h2>
+                {title ? (
+                    <h2 className="text-lg font-semibold text-white sm:text-2xl">
+                        {title}
+                    </h2>
+                ) : null}
                 {subtitle ? (
                     <p className="text-sm text-slate-300 sm:text-base">
                         {subtitle}
