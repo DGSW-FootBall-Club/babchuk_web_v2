@@ -30,7 +30,9 @@ export default function CreateMatchLayout({
             className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
         >
             <body className="min-h-full flex flex-col">
-                {children}
+                <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-6 sm:gap-8 sm:px-6 sm:py-8 lg:gap-10 lg:px-8 lg:py-10">
+                    {children}
+                </div>
                 <Toaster position="top-right" />
             </body>
         </html>

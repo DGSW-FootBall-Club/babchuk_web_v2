@@ -117,14 +117,14 @@ export default function MatchForm() {
                         />
                     </label>
                 </div>
+                <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="mt-4 w-full cursor-pointer rounded-lg bg-black px-4 py-3 font-semibold text-white shadow-lg transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:mt-6"
+                >
+                    {isSubmitting ? "생성 중..." : "매치 만들기"}
+                </button>
             </div>
-            <button
-                type="submit"
-                disabled={isSubmitting}
-                className="mt-4 w-full cursor-pointer rounded-lg bg-black px-4 py-3 font-semibold text-white shadow-lg transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:mt-6"
-            >
-                {isSubmitting ? "생성 중..." : "매치 만들기"}
-            </button>
         </form>
     );
 }
