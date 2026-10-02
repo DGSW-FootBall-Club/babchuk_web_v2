@@ -1,19 +1,26 @@
 import red_team from "@/public/redteam.svg";
 import blue_team from "@/public/blueteam.svg";
 import Image from "next/image";
+import Link from "next/link";
 
 type HoloCardProps = {
+    id?: string;
     redteam: number;
     blueteam: number;
     status: "full" | "pending";
+    date?: string;
+    time?: string;
 };
 
 export default function MatchCard({
+    id,
     redteam,
     blueteam,
     status,
+    date = "2023.06.30",
+    time = "오후 3:00",
 }: HoloCardProps) {
-    return (
+    const cardContent = (
         <div className="relative flex min-h-32 items-center justify-between gap-2 rounded-lg bg-white p-4 pt-8 shadow-md sm:gap-4 sm:p-5 sm:pt-8">
             {status === "full" && (
                 <p className="absolute left-0 top-0 flex h-6 w-16 items-center justify-center rounded-tl-lg rounded-br-lg bg-[#C33431] text-xs font-bold text-white">
@@ -38,13 +45,12 @@ export default function MatchCard({
                     <span className="text-sm text-gray-600">{redteam}명</span>
                 </div>
             </div>
-            {/**날짜  */}
             <div className="flex flex-col items-center justify-center gap-2">
                 <p className="text-center text-sm font-bold sm:text-base">
-                    2023.06.30
+                    {date}
                 </p>
                 <p className="rounded-md bg-gray-600 px-2 py-1 text-xs text-white sm:text-sm">
-                    오후 3:00
+                    {time}
                 </p>
             </div>
             <div className="flex flex-col items-center justify-center gap-2">
@@ -61,5 +67,15 @@ export default function MatchCard({
                 </div>
             </div>
         </div>
+    );
+
+    if (!id) {
+        return cardContent;
+    }
+
+    return (
+        <Link href={`/match/${id}`} className="block">
+            {cardContent}
+        </Link>
     );
 }
