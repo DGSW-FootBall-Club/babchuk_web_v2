@@ -1,14 +1,12 @@
 import Link from "next/link";
 import { mockMatchList } from "@/lib/mock/matchData";
-import { ArrowLeft } from "lucide-react";
+import BackButton from "@/components/common/BackButton";
 
 export default function Match() {
     return (
         <div className="mx-auto flex w-full max-w-4xl flex-col items-center justify-center gap-4">
             <div className="w-full flex items-center gap-2">
-                <Link href="/" aria-label="매치 목록으로 돌아가기">
-                    <ArrowLeft className="h-6 w-6" />
-                </Link>
+                <BackButton fallbackHref="/" label="이전 페이지로 이동" />
                 <h1 className="text-xl font-bold text-black sm:text-2xl">
                     현재 있는 매치들
                 </h1>

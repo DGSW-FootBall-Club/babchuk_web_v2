@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import BackButton from "@/components/common/BackButton";
 import useMatchForm from "@/hooks/useMatchForm";
 
 export default function MatchForm() {
@@ -28,9 +27,7 @@ export default function MatchForm() {
             onSubmit={handleSubmit}
         >
             <div className="flex w-full items-center gap-2">
-                <Link href="/" aria-label="매치 목록으로 돌아가기">
-                    <ArrowLeft className="h-6 w-6" />
-                </Link>
+                <BackButton fallbackHref="/" label="이전 페이지로 이동" />
                 <h1 className="text-xl font-semibold text-black sm:text-2xl">
                     매치 만들기
                 </h1>
