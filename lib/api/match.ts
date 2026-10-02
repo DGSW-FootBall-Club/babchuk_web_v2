@@ -1,55 +1,32 @@
-import type { CreateMatchPayload } from "@/types/match.type";
+import { api } from "@/lib/api";
+import { mockMatches } from "@/lib/mock/matchData";
+import type { CreateMatchPayload, Match } from "@/types/match.type";
 
-// const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const HAS_API = Boolean(process.env.NEXT_PUBLIC_API_URL);
 
-export async function createMatch(_payload: CreateMatchPayload) {
-    // const res = await fetch(`${API_URL}/matches`, {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     credentials: "include",
-    //     body: JSON.stringify(payload),
-    // });
-    //
-    // if (!res.ok) {
-    //     const message = await res.text().catch(() => "");
-    //     throw new Error(message || `요청 실패 (${res.status})`);
-    // }
-    //
-    // return res.json();
+export async function createMatch(payload: CreateMatchPayload) {
+    if (!HAS_API) {
+        return { ok: true, data: { ...payload, id: String(Date.now()) } };
+    }
 
-    return Promise.resolve({ ok: true });
+    return api<{ ok: true; data: Match }>("/matches", {
+        method: "POST",
+        body: JSON.stringify(payload),
+    });
 }
 
-export async function getMatchById(_id: string) {
-    // const res = await fetch(`${API_URL}/matches/${id}`, {
-    //     method: "GET",
-    //     headers: { "Content-Type": "application/json" },
-    //     credentials: "include",
-    // });
-    //
-    // if (!res.ok) {
-    //     const message = await res.text().catch(() => "");
-    //     throw new Error(message || `요청 실패 (${res.status})`);
-    // }
-    //
-    // return res.json();
+export async function getMatchById(id: string) {
+    if (!HAS_API) {
+        return mockMatches.find((match) => match.id === id) ?? null;
+    }
 
-    return Promise.resolve({ ok: true });
+    return api<Match | null>(`/matches/${id}`);
 }
 
 export async function getMatchList() {
-    // const res = await fetch(`${API_URL}/matches`, {
-    //     method: "GET",
-    //     headers: { "Content-Type": "application/json" },
-    //     credentials: "include",
-    // });
-    //
-    // if (!res.ok) {
-    //     const message = await res.text().catch(() => "");
-    //     throw new Error(message || `요청 실패 (${res.status})`);
-    // }
-    //
-    // return res.json();
+    if (!HAS_API) {
+        return mockMatches;
+    }
 
-    return Promise.resolve([]);
+    return api<Match[]>("/matches");
 }
