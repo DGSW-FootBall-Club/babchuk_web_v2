@@ -9,7 +9,7 @@ export default function LoginForm() {
             className="flex w-full max-w-sm cursor-pointer flex-col items-center justify-center rounded-lg bg-[#0083f0] p-4"
             onClick={login}
         >
-            <div className="text-xl font-medium text-white flex gap-2   ">
+            <div className="text-xl font-medium text-white flex gap-2">
                 도담도담으로 로그인
             </div>
         </button>
