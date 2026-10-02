@@ -9,7 +9,7 @@ export default function Home() {
     const upcomingMatches = mockMatchList.slice(0, 3);
 
     return (
-        <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-8 px-4 py-8 sm:px-6 lg:gap-10 lg:px-8 lg:py-10">
+        <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-0 sm:gap-8">
             <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
                 <HoloCard
                     title="매치 생성"
@@ -26,7 +26,7 @@ export default function Home() {
                     router={"/match"}
                 />
                 <section className="flex flex-col gap-4 md:col-span-2 xl:col-span-1">
-                    <h1 className="text-2xl font-bold sm:text-3xl">
+                    <h1 className="text-xl font-bold sm:text-2xl xl:text-3xl">
                         다가오는 일정
                     </h1>
                     <div className="flex flex-1 flex-col gap-3">

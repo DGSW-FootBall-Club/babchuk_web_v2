@@ -9,13 +9,13 @@ export default function MatchDetail({ match }: MatchDetailProps) {
     const teamBUsers = match?.users.filter((user) => user.team === "B") ?? [];
 
     return (
-        <div className="bg-white w-full flex flex-col gap-4 rounded-xl p-4 text-white">
-            <div className="flex items-center justify-between gap-3">
-                <h2 className="text-2xl font-bold text-black">
+        <div className="flex w-full flex-col gap-4 rounded-xl bg-white p-4 text-white sm:p-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <h2 className="text-xl font-bold text-black sm:text-2xl">
                     {match?.title ?? "매치 정보 불러오는 중..."}
                 </h2>
                 <span
-                    className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+                    className={`self-start rounded-full px-2.5 py-1 text-xs font-semibold ${
                         match?.status === "full"
                             ? "bg-red-500 text-white"
                             : "bg-emerald-500 text-white"
@@ -50,13 +50,13 @@ export default function MatchDetail({ match }: MatchDetailProps) {
                 )}
             </div>
 
-            <div className="mt-2 rounded-lg p-3">
+            <div className="mt-2 rounded-lg p-1 sm:p-3">
                 <p className="mb-3 text-sm font-semibold text-black">
                     참여 인원
                 </p>
 
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                    <div className="p-3">
+                    <div className="rounded-lg p-2 sm:p-3">
                         <p className="mb-2 text-sm font-semibold text-red-500">
                             A 팀
                         </p>
@@ -65,9 +65,9 @@ export default function MatchDetail({ match }: MatchDetailProps) {
                                 teamAUsers.map((user) => (
                                     <li
                                         key={user.email}
-                                        className="flex items-center justify-between gap-3 rounded-md py-2 text-sm"
+                                        className="flex flex-col gap-1 rounded-md py-2 text-sm sm:flex-row sm:items-center sm:justify-between"
                                     >
-                                        <span className="text-black font-bold">
+                                        <span className="font-bold text-black">
                                             {user.name}
                                         </span>
                                         <span className="text-gray-700">
@@ -83,7 +83,7 @@ export default function MatchDetail({ match }: MatchDetailProps) {
                         </ul>
                     </div>
 
-                    <div className="rounded-lg py-2 text-sm">
+                    <div className="rounded-lg p-2 text-sm sm:p-3">
                         <p className="mb-2 text-sm font-semibold text-blue-500">
                             B 팀
                         </p>
@@ -92,9 +92,9 @@ export default function MatchDetail({ match }: MatchDetailProps) {
                                 teamBUsers.map((user) => (
                                     <li
                                         key={user.email}
-                                        className="flex items-center justify-between gap-3 rounded-md py-2 text-sm"
+                                        className="flex flex-col gap-1 rounded-md py-2 text-sm sm:flex-row sm:items-center sm:justify-between"
                                     >
-                                        <span className="text-black font-bold">
+                                        <span className="font-bold text-black">
                                             {user.name}
                                         </span>
                                         <span className="text-slate-700">
