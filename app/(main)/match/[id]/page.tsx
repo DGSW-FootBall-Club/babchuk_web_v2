@@ -4,9 +4,8 @@ import MatchDetail from "@/components/match/MatchDetail";
 import { mockMatches } from "@/lib/mock/matchData";
 import type { Match } from "@/types/match.type";
 import Stadium from "@/public/stadium.svg";
-import { ArrowLeft } from "lucide-react";
+import BackButton from "@/components/common/BackButton";
 import Image from "next/image";
-import Link from "next/link";
 import { Suspense, useState } from "react";
 import { usePathname } from "next/navigation";
 import toast from "react-hot-toast";
@@ -129,9 +128,10 @@ function MatchPageContent({ id }: { id: string }) {
         <div className="mx-auto flex min-h-screen w-full max-w-4xl flex-col items-center pb-20">
             <div className="w-full flex-1">
                 <div className="flex w-full items-center gap-2">
-                    <Link href="/match" aria-label="매치 목록으로 돌아가기">
-                        <ArrowLeft className="h-6 w-6" />
-                    </Link>
+                    <BackButton
+                        fallbackHref="/match"
+                        label="매치 목록으로 돌아가기"
+                    />
                     <h1 className="text-xl font-semibold text-black sm:text-2xl">
                         매치 정보
                     </h1>

@@ -17,12 +17,13 @@ export default function HistoryGalleryItem({
 }: HistoryGalleryItemProps) {
     return (
         <article className="w-full overflow-hidden rounded-xl">
-            <div className="relative h-70 w-full overflow-hidden sm:h-80">
+            <div className="history-gallery-frame relative h-70 w-full overflow-hidden sm:h-80">
                 <Image
                     src={image}
                     alt={alt ?? title}
                     fill
-                    className={`object-cover ${imageClassName}`}
+                    className={`history-gallery-image object-cover ${imageClassName}`}
+                    style={{ objectPosition: "center 58%" }}
                     sizes="(max-width: 768px) 100vw, 768px"
                 />
             </div>
