@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { createMatch } from "@/lib/api/match";
+import type { User } from "@/types/user.type";
 
 export default function useMatchForm() {
     const router = useRouter();
@@ -40,15 +41,22 @@ export default function useMatchForm() {
         setIsSubmitting(true);
 
         try {
+            const author: User = {
+                email: trimmedAuthorEmail,
+                name: trimmedAuthorName,
+                profile: "",
+                currentMatchIds: [],
+                participatedMatchIds: [],
+                joinedMatchIds: [],
+            };
+
             await createMatch({
                 title: matchName.trim(),
                 maxPlayers,
                 startAt: `${date}T${time}`,
-                author: {
-                    name: trimmedAuthorName,
-                    email: trimmedAuthorEmail,
-                },
+                author,
             });
+
             toast.success("매치가 생성되었어요.");
             router.push("/match");
         } catch (err) {
