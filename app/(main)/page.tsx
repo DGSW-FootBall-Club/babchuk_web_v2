@@ -3,8 +3,11 @@ import MatchCard from "@/components/home/MatchCard";
 import createMatch from "@/public/create_match.svg";
 import viewMatch from "@/public/view_match.png";
 import HistoryCard from "@/components/home/HistoryCard";
+import { mockMatchList } from "@/lib/mock/matchData";
 
 export default function Home() {
+    const upcomingMatches = mockMatchList.slice(0, 3);
+
     return (
         <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-8 px-4 py-8 sm:px-6 lg:gap-10 lg:px-8 lg:py-10">
             <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
@@ -27,13 +30,25 @@ export default function Home() {
                         다가오는 일정
                     </h1>
                     <div className="flex flex-1 flex-col gap-3">
-                        <MatchCard redteam={10} blueteam={10} status="full" />
-                        <MatchCard redteam={10} blueteam={10} status="full" />
-                        <MatchCard
-                            redteam={10}
-                            blueteam={10}
-                            status="pending"
-                        />
+                        {upcomingMatches.map((match) => (
+                            <MatchCard
+                                key={match.id}
+                                id={match.id}
+                                redteam={
+                                    match.users.filter(
+                                        (user) => user.team === "A",
+                                    ).length
+                                }
+                                blueteam={
+                                    match.users.filter(
+                                        (user) => user.team === "B",
+                                    ).length
+                                }
+                                status={match.status}
+                                date={match.date}
+                                time={match.time}
+                            />
+                        ))}
                     </div>
                 </section>
             </section>
