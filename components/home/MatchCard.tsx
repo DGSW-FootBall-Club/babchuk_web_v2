@@ -32,38 +32,42 @@ export default function MatchCard({
                     모집중
                 </p>
             )}
-            <div className="flex flex-col items-center justify-center gap-2 ">
+            <div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-2">
                 <Image
                     src={red_team}
                     alt="redteam"
                     width={50}
                     height={50}
-                    className="h-10 w-10 sm:h-12 sm:w-12"
+                    className="h-9 w-9 sm:h-12 sm:w-12"
                 />
-                <div className="flex flex-col items-center justify-center gap-2">
-                    <p className="text-sm font-medium sm:text-base">레드팀</p>
-                    <span className="text-sm text-gray-600">{redteam}명</span>
+                <div className="flex flex-col items-center justify-center gap-1">
+                    <p className="text-xs font-medium sm:text-sm">레드팀</p>
+                    <span className="text-xs text-gray-600 sm:text-sm">
+                        {redteam}명
+                    </span>
                 </div>
             </div>
-            <div className="flex flex-col items-center justify-center gap-2">
-                <p className="text-center text-sm font-bold sm:text-base">
+            <div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-2">
+                <p className="text-center text-xs font-bold sm:text-sm">
                     {date}
                 </p>
-                <p className="rounded-md bg-gray-600 px-2 py-1 text-xs text-white sm:text-sm">
+                <p className="rounded-md bg-gray-600 px-2 py-1 text-[10px] text-white sm:text-xs">
                     {time}
                 </p>
             </div>
-            <div className="flex flex-col items-center justify-center gap-2">
+            <div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-2">
                 <Image
                     src={blue_team}
                     alt="blueteam"
                     width={50}
                     height={50}
-                    className="h-10 w-10 sm:h-12 sm:w-12"
+                    className="h-9 w-9 sm:h-12 sm:w-12"
                 />
-                <div className="flex flex-col items-center justify-center gap-2">
-                    <p className="text-sm font-medium sm:text-base">블루팀</p>
-                    <span className="text-sm text-gray-600">{blueteam}명</span>
+                <div className="flex flex-col items-center justify-center gap-1">
+                    <p className="text-xs font-medium sm:text-sm">블루팀</p>
+                    <span className="text-xs text-gray-600 sm:text-sm">
+                        {blueteam}명
+                    </span>
                 </div>
             </div>
         </div>

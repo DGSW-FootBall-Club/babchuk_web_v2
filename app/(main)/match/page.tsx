@@ -3,9 +3,9 @@ import { mockMatchList } from "@/lib/mock/matchData";
 
 export default function Match() {
     return (
-        <div className="flex flex-col items-center justify-center gap-4">
+        <div className="mx-auto flex w-full max-w-4xl flex-col items-center justify-center gap-4">
             <div className="w-full flex items-center justify-between">
-                <h1 className="text-2xl font-bold text-black">
+                <h1 className="text-xl font-bold text-black sm:text-2xl">
                     현재 있는 매치들
                 </h1>
             </div>
@@ -15,11 +15,11 @@ export default function Match() {
                     <Link
                         key={match.id}
                         href={`/match/${match.id}`}
-                        className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+                        className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md sm:p-5"
                     >
-                        <div className="flex items-center justify-between gap-3">
-                            <div>
-                                <p className="text-lg font-semibold text-black">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="min-w-0">
+                                <p className="truncate text-base font-semibold text-black sm:text-lg">
                                     {match.title}
                                 </p>
                                 <p className="text-sm text-slate-500">
@@ -27,7 +27,7 @@ export default function Match() {
                                 </p>
                             </div>
                             <span
-                                className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+                                className={`self-start rounded-full px-2.5 py-1 text-xs font-semibold sm:self-auto ${
                                     match.status === "full"
                                         ? "bg-red-500 text-white"
                                         : "bg-emerald-500 text-white"
@@ -37,7 +37,7 @@ export default function Match() {
                             </span>
                         </div>
 
-                        <div className="mt-3 flex items-center justify-between text-sm text-slate-600">
+                        <div className="mt-3 flex flex-col gap-1 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between">
                             <span>
                                 인원: {match.currentPlayers}/{match.maxPlayers}
                             </span>

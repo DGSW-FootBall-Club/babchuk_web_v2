@@ -2,7 +2,7 @@ import MatchForm from "@/components/match/MatchForm";
 
 export default function CreateMatchPage() {
     return (
-        <div className="min-h-full mx-auto flex w-full max-w-7xl flex-1 flex-col gap-8 px-4 py-8 sm:px-6 lg:gap-10 lg:px-8 lg:py-10">
+        <div className="mx-auto flex min-h-full w-full max-w-3xl flex-1 flex-col gap-6 px-0 py-0 sm:gap-8">
             <MatchForm />
         </div>
     );
