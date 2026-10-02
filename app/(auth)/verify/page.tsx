@@ -18,10 +18,14 @@ function Verify() {
         }
         sessionStorage.removeItem("oauth_state");
 
-        fetch("/api/auth/token", {
+        const codeVerifier = sessionStorage.getItem("code_verifier");
+        sessionStorage.removeItem("code_verifier");
+
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/token`, {
             method: "POST",
+            credentials: "include",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ code }),
+            body: JSON.stringify({ code, codeVerifier }),
         }).then((res) => {
             router.replace(res.ok ? "/" : "/login?error=auth_failed");
         });

@@ -2,30 +2,30 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
 export async function POST(req: Request) {
-    const { code } = await req.json();
-    if (!code) {
-        return NextResponse.json({ error: "code required" }, { status: 400 });
+    const { code, codeVerifier } = await req.json();
+    if (!code || !codeVerifier) {
+        return NextResponse.json({ error: "invalid request" }, { status: 400 });
     }
 
     const tokenRes = await fetch(process.env.OAUTH_TOKEN_URL!, {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
             grant_type: "authorization_code",
             code,
-            client_id: process.env.NEXT_PUBLIC_OAUTH_CLIENT_ID!,
-            client_secret: process.env.OAUTH_CLIENT_SECRET!,
-            redirect_uri: process.env.NEXT_PUBLIC_OAUTH_REDIRECT_URI!,
+            redirect_uri: process.env.NEXT_PUBLIC_OAUTH_REDIRECT_URI,
+            client_id: process.env.NEXT_PUBLIC_OAUTH_CLIENT_ID,
+            client_secret: process.env.OAUTH_CLIENT_SECRET,
+            code_verifier: codeVerifier,
         }),
     });
-
     if (!tokenRes.ok) {
         return NextResponse.json(
             { error: "token exchange failed" },
             { status: 401 },
         );
     }
-    const { access_token } = await tokenRes.json();
+    const { access_token, refresh_token, expires_in } = await tokenRes.json();
 
     const userRes = await fetch(process.env.OAUTH_USERINFO_URL!, {
         headers: { Authorization: `Bearer ${access_token}` },
@@ -36,13 +36,22 @@ export async function POST(req: Request) {
     const user = await userRes.json();
 
     const cookieStore = await cookies();
-    cookieStore.set("access_token", access_token, {
+    const base = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        sameSite: "lax" as const,
         path: "/",
-        maxAge: 60 * 60,
+    };
+    cookieStore.set("access_token", access_token, {
+        ...base,
+        maxAge: expires_in ?? 3600,
     });
+    if (refresh_token) {
+        cookieStore.set("refresh_token", refresh_token, {
+            ...base,
+            maxAge: 60 * 60 * 24 * 30,
+        });
+    }
 
     return NextResponse.json({ user });
 }
