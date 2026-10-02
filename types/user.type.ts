@@ -5,4 +5,8 @@ export type User = {
     email: string;
     name: string;
     team?: TeamType;
+    profile?: string;
+    currentMatchIds?: string[];
+    participatedMatchIds?: string[];
+    joinedMatchIds?: string[];
 };
