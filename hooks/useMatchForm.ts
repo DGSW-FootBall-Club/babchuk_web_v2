@@ -14,7 +14,7 @@ export default function useMatchForm() {
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
     const [authorName, setAuthorName] = useState("");
-    const [authorEmail, setAuthorEmail] = useState("");
+    const [authorUsername, setAuthorUsername] = useState("");
 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -23,7 +23,7 @@ export default function useMatchForm() {
         if (isSubmitting) return;
 
         const trimmedAuthorName = authorName.trim();
-        const trimmedAuthorEmail = authorEmail.trim();
+        const trimmedAuthorUsername = authorUsername.trim();
 
         if (
             !matchName.trim() ||
@@ -32,7 +32,7 @@ export default function useMatchForm() {
             !date ||
             !time ||
             !trimmedAuthorName ||
-            !trimmedAuthorEmail
+            !trimmedAuthorUsername
         ) {
             toast.error("매치 정보와 작성자 정보를 올바르게 입력해주세요.");
             return;
@@ -42,9 +42,8 @@ export default function useMatchForm() {
 
         try {
             const author: User = {
-                email: trimmedAuthorEmail,
+                username: trimmedAuthorUsername,
                 name: trimmedAuthorName,
-                profile: "",
                 currentMatchIds: [],
                 participatedMatchIds: [],
                 joinedMatchIds: [],
@@ -79,8 +78,8 @@ export default function useMatchForm() {
         setTime,
         authorName,
         setAuthorName,
-        authorEmail,
-        setAuthorEmail,
+        authorUsername,
+        setAuthorUsername,
         isSubmitting,
         handleSubmit,
     };

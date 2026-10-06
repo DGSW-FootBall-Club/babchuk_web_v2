@@ -62,14 +62,14 @@ export default function MatchDetail({ match }: MatchDetailProps) {
                             {teamAUsers.length ? (
                                 teamAUsers.map((user) => (
                                     <li
-                                        key={user.email}
+                                        key={user.username}
                                         className="flex flex-col gap-1 rounded-md py-2 text-sm sm:flex-row sm:items-center sm:justify-between"
                                     >
                                         <span className="font-bold text-black">
                                             {user.name}
                                         </span>
                                         <span className="text-gray-700">
-                                            {user.email}
+                                            {user.username}
                                         </span>
                                     </li>
                                 ))
@@ -89,14 +89,14 @@ export default function MatchDetail({ match }: MatchDetailProps) {
                             {teamBUsers.length ? (
                                 teamBUsers.map((user) => (
                                     <li
-                                        key={user.email}
+                                        key={user.username}
                                         className="flex flex-col gap-1 rounded-md py-2 text-sm sm:flex-row sm:items-center sm:justify-between"
                                     >
                                         <span className="font-bold text-black">
                                             {user.name}
                                         </span>
                                         <span className="text-slate-700">
-                                            {user.email}
+                                            {user.username}
                                         </span>
                                     </li>
                                 ))

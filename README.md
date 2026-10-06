@@ -2,7 +2,7 @@
 
 ## 1. 프로젝트 개요
 
-Babchuk Web v2는 축구 매치 생성, 조회, 신청 기능을 제공하는 웹 서비스입니다. 현재 프론트엔드는 mock 데이터 기반으로 동작하고 있으며, 실제 서버가 연결되면 아래 API 명세를 기준으로 구현해야 합니다.
+Babchuk Web v2는 축구 매치 생성, 조회, 신청 기능을 제공하는 웹 서비스입니다. 현재 매치 화면은 mock 데이터를 사용하며, `NEXT_PUBLIC_API_URL`이 설정되면 매치 API를 호출합니다. 프로필과 매치 참가 이력은 타입으로 정의되어 있으며, 프로필 API는 아직 연결되어 있지 않습니다.
 
 주요 기능:
 
@@ -29,13 +29,13 @@ Babchuk Web v2는 축구 매치 생성, 조회, 신청 기능을 제공하는 �
 
 ### 2.1 로그인
 
-- 사용자는 이메일 기반으로 로그인을 수행할 수 있어야 한다.
+- 사용자는 사용자 이름(username) 기반으로 로그인을 수행할 수 있어야 한다.
 - 로그인 성공 시 사용자 정보를 세션/토큰에 저장한다.
 - 현재 프론트는 로그인 폼 UI만 있고, 서버 연결은 아직 비활성화 상태이다.
 
 필수 정보:
 
-- email
+- username
 - name
 
 기대 동작:
@@ -75,14 +75,14 @@ Babchuk Web v2는 축구 매치 생성, 조회, 신청 기능을 제공하는 �
 - date: 날짜
 - time: 시간
 - authorName: 작성자 이름
-- authorEmail: 작성자 이메일
+- authorUsername: 작성자 사용자 이름
 
 기본 규칙:
 
 - 제목은 비어 있을 수 없다.
 - 최대 인원은 2 이상이어야 한다.
 - 날짜와 시간이 모두 있어야 한다.
-- 작성자 이름과 이메일은 필수다.
+- 작성자 이름과 사용자 이름은 필수다.
 
 생성 시 서버로 전달되는 payload:
 
@@ -93,7 +93,7 @@ Babchuk Web v2는 축구 매치 생성, 조회, 신청 기능을 제공하는 �
     "startAt": "2026-10-03T18:00",
     "author": {
         "name": "민수",
-        "email": "minsu@example.com"
+        "username": "minsu"
     }
 }
 ```
@@ -175,19 +175,39 @@ Babchuk Web v2는 축구 매치 생성, 조회, 신청 기능을 제공하는 �
 ```ts
 export type TeamType = "A" | "B";
 
+export type Profile = {
+    userId: string;
+    username: string;
+    name: string;
+    participatedMatchIds: string[];
+    currentMatchIds: string[];
+    profileImage: string | null;
+};
+
 export type User = {
     id?: string;
-    email: string;
+    userId?: string;
+    username: string;
     name: string;
     team?: TeamType;
+    profileImage?: string | null;
+    currentMatchIds?: string[];
+    participatedMatchIds?: string[];
+    joinedMatchIds?: string[];
 };
 ```
 
 설명:
 
-- `email`: 사용자 식별용 이메일
+- `userId`: 사용자 고유 ID (`Profile`에서 필수)
+- `username`: 사용자 식별용 이름
 - `name`: 사용자 이름
+- `participatedMatchIds`: 참가 완료한 매치 ID 목록
+- `currentMatchIds`: 현재 참가 중인 매치 ID 목록
+- `profileImage`: 프로필 이미지 URL. 이미지가 없으면 `null`
 - `team`: 매치 내부 팀 구분, 값은 `A` 또는 `B`
+
+매치 작성자 및 참여자는 `User` 형태로 전달한다. 매치 참가 이력과 프로필 상세 정보는 `Profile`에 정의되어 있고, 매치 API 응답에 해당 데이터가 포함되는지는 서버 계약에 따라야 한다.
 
 ### 3.2 Match
 
@@ -264,12 +284,12 @@ GET /matches
         "time": "18:00",
         "author": {
             "name": "민수",
-            "email": "minsu@example.com"
+            "username": "minsu"
         },
         "users": [
-            { "name": "민수", "email": "minsu@example.com", "team": "A" },
-            { "name": "지우", "email": "jiwoo@example.com", "team": "A" },
-            { "name": "태준", "email": "taejun@example.com", "team": "B" }
+            { "name": "민수", "username": "minsu", "team": "A" },
+            { "name": "지우", "username": "jiwoo", "team": "A" },
+            { "name": "태준", "username": "taejun", "team": "B" }
         ]
     }
 ]
@@ -304,12 +324,12 @@ GET /matches/1
     "time": "18:00",
     "author": {
         "name": "민수",
-        "email": "minsu@example.com"
+        "username": "minsu"
     },
     "users": [
-        { "name": "민수", "email": "minsu@example.com", "team": "A" },
-        { "name": "지우", "email": "jiwoo@example.com", "team": "A" },
-        { "name": "태준", "email": "taejun@example.com", "team": "B" }
+        { "name": "민수", "username": "minsu", "team": "A" },
+        { "name": "지우", "username": "jiwoo", "team": "A" },
+        { "name": "태준", "username": "taejun", "team": "B" }
     ]
 }
 ```
@@ -333,7 +353,7 @@ GET /matches/1
     "startAt": "2026-10-03T18:00",
     "author": {
         "name": "민수",
-        "email": "minsu@example.com"
+        "username": "minsu"
     }
 }
 ```
@@ -351,9 +371,9 @@ GET /matches/1
     "time": "18:00",
     "author": {
         "name": "민수",
-        "email": "minsu@example.com"
+        "username": "minsu"
     },
-    "users": [{ "name": "민수", "email": "minsu@example.com", "team": "A" }]
+    "users": [{ "name": "민수", "username": "minsu", "team": "A" }]
 }
 ```
 
@@ -384,7 +404,7 @@ POST /matches/1/join
 {
     "user": {
         "name": "홍길동",
-        "email": "hong@example.com"
+        "username": "hong"
     }
 }
 ```

@@ -15,8 +15,8 @@ export default function MatchForm() {
         setTime,
         authorName,
         setAuthorName,
-        authorEmail,
-        setAuthorEmail,
+        authorUsername,
+        setAuthorUsername,
         isSubmitting,
         handleSubmit,
     } = useMatchForm();
@@ -100,15 +100,15 @@ export default function MatchForm() {
                         />
                     </label>
                     <label className="flex flex-col gap-2 text-sm font-medium text-slate-700 sm:text-base">
-                        작성자 이메일
+                        작성자 사용자 이름
                         <input
-                            type="email"
-                            name="authorEmail"
-                            value={authorEmail}
+                            type="text"
+                            name="authorUsername"
+                            value={authorUsername}
                             onChange={(event) =>
-                                setAuthorEmail(event.target.value)
+                                setAuthorUsername(event.target.value)
                             }
-                            placeholder="작성자 이메일을 입력해 주세요."
+                            placeholder="작성자 사용자 이름을 입력해 주세요."
                             required
                             className="w-full rounded-lg bg-white p-3 text-black outline-none ring-0 transition focus:border focus:border-slate-300 sm:p-4"
                         />
