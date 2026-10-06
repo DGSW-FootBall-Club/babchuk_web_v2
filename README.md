@@ -2,7 +2,7 @@
 
 ## 1. 프로젝트 개요
 
-Babchuk Web v2는 축구 매치 생성, 조회, 신청 기능을 제공하는 웹 서비스입니다. 현재 매치 화면은 mock 데이터를 사용하며, `NEXT_PUBLIC_API_URL`이 설정되면 매치 API를 호출합니다. 프로필과 매치 참가 이력은 타입으로 정의되어 있으며, 프로필 API는 아직 연결되어 있지 않습니다.
+Babchuk Web v2는 축구 매치 생성, 조회, 신청 기능을 제공하는 웹 서비스입니다. 현재 매치 화면은 mock 데이터를 사용하며, `NEXT_PUBLIC_API_URL`이 설정되면 매치 API를 호출합니다. 로그인한 사용자의 프로필은 `GET /auth/getme`로 조회해 Zustand 스토어에 보관합니다.
 
 주요 기능:
 
@@ -445,6 +445,33 @@ POST /matches/1/join
 - 404 Not Found
 - 409 Conflict
 - 500 Internal Server Error
+
+---
+
+### 4.6 GET /auth/getme
+
+현재 로그인한 사용자의 프로필 조회. 인증 쿠키를 사용하며, 공통 API 클라이언트가 401 응답에 대해 토큰 갱신을 시도한다.
+
+요청:
+
+```http
+GET /auth/getme
+```
+
+응답 예시:
+
+```json
+{
+    "userId": "user-123",
+    "username": "minsu",
+    "name": "민수",
+    "participatedMatchIds": ["match-1", "match-2"],
+    "currentMatchIds": ["match-3"],
+    "profileImage": "https://example.com/profile/minsu.png"
+}
+```
+
+응답은 `Profile` 타입이며, `profileImage`가 없는 경우 `null`을 반환한다. `app/(main)/layout.tsx`가 마운트될 때 `getMe()` (`lib/api/profile.ts`)를 호출하고, 성공한 프로필은 `useProfileStore` (`stores/profileStore.ts`)의 `profile` 상태에 저장한다. 컴포넌트에서는 `useProfileStore((state) => state.profile)`로 읽고, 필요하면 `loadProfile()`로 다시 조회할 수 있다. 프로필은 브라우저 저장소에 영속화하지 않고 앱 진입 시 서버에서 다시 가져온다.
 
 ---
 

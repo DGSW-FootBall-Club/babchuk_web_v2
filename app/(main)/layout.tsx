@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import type { ReactNode } from "react";
 import Topbar from "@/components/common/Topbar";
+import ProfileLoader from "@/components/profile/ProfileLoader";
 import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
@@ -65,6 +66,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
             suppressHydrationWarning
         >
             <body className="min-h-full flex flex-col bg-[#f5f5f5] text-slate-900">
+                <ProfileLoader />
                 <Topbar />
                 <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-6 sm:gap-8 sm:px-6 sm:py-8 lg:gap-10 lg:px-8 lg:py-10">
                     {children}
