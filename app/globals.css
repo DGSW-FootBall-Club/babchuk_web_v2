@@ -107,10 +107,12 @@ img {
 
 .holo-card {
     --holo: 80, 80, 80;
+    --rotate-x: 0deg;
+    --rotate-y: 0deg;
     position: relative;
     overflow: hidden;
     transition:
-        transform 0.4s ease,
+        transform 0.12s ease-out,
         box-shadow 0.4s ease;
 }
 
@@ -149,7 +151,9 @@ img {
 }
 
 .holo-card:hover {
-    transform: perspective(800px) rotateX(3deg) rotateY(-4deg) scale(1.02);
+    transform:
+        perspective(800px) rotateX(var(--rotate-x)) rotateY(var(--rotate-y))
+        scale(1.02);
     box-shadow: 0 0 24px rgba(var(--holo), 0.35);
 }
 
@@ -173,6 +177,10 @@ img {
     .holo-card::before {
         transition: none;
         animation: none;
+    }
+
+    .holo-card:hover {
+        transform: none;
     }
 }
 

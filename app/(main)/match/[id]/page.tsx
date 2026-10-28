@@ -10,10 +10,14 @@ import {
     setMatchApplicationLock,
     shuffleMatchTeams,
     updateMatch,
+    updateMatchResult,
 } from "@/lib/api/match";
 import Stadium from "@/public/stadium.svg";
 import { useProfileStore } from "@/stores/profileStore";
-import type { UpdateMatchPayload } from "@/types/match.type";
+import type {
+    MatchResult,
+    UpdateMatchPayload,
+} from "@/types/match.type";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { Suspense, useState } from "react";
@@ -77,6 +81,10 @@ function MatchPageContent() {
             return;
         }
         if (isJoining) return;
+        if (match.result) {
+            toast.error("경기가 종료되어 참가 신청을 할 수 없습니다.");
+            return;
+        }
         if (isFull) {
             toast.error("마감된 매치는 신청할 수 없습니다.");
             return;
@@ -136,6 +144,30 @@ function MatchPageContent() {
                 error instanceof Error
                     ? error.message
                     : "팀 셔플에 실패했어요.",
+            );
+        } finally {
+            setIsUpdatingMatch(false);
+        }
+    };
+
+    const handleSetMatchResult = async (result: MatchResult | null) => {
+        if (!match || !isMatchAuthor || isUpdatingMatch) return;
+        setIsUpdatingMatch(true);
+        try {
+            await updateMatchResult(id, { result });
+            await refresh();
+            toast.success(
+                result === "DRAW"
+                    ? "경기 결과를 무승부로 저장했어요."
+                    : result
+                      ? `${result === "A_WIN" ? "A팀" : "B팀"} 승리로 저장했어요.`
+                      : "경기 결과를 초기화했어요.",
+            );
+        } catch (error) {
+            toast.error(
+                error instanceof Error
+                    ? error.message
+                    : "경기 결과 저장에 실패했어요.",
             );
         } finally {
             setIsUpdatingMatch(false);
@@ -233,6 +265,59 @@ function MatchPageContent() {
                                         관리할 수 있습니다.
                                     </p>
                                 </div>
+                                <div className="flex flex-col gap-2 border-y border-slate-100 py-4">
+                                    <h3 className="text-sm font-semibold text-slate-800">
+                                        경기 결과 입력
+                                    </h3>
+                                    <p className="text-sm text-slate-600">
+                                        방장이 A팀 또는 B팀의 승리, 무승부를
+                                        선택하면 참가자 전적에 반영됩니다.
+                                    </p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {(
+                                            [
+                                                ["A_WIN", "A팀 승리"],
+                                                ["B_WIN", "B팀 승리"],
+                                                ["DRAW", "무승부"],
+                                            ] as const
+                                        ).map(([result, label]) => (
+                                            <button
+                                                key={result}
+                                                type="button"
+                                                onClick={() =>
+                                                    void handleSetMatchResult(
+                                                        result,
+                                                    )
+                                                }
+                                                disabled={isUpdatingMatch}
+                                                aria-pressed={
+                                                    match.result === result
+                                                }
+                                                className={`rounded-lg border px-3 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50 ${
+                                                    match.result === result
+                                                        ? "border-slate-900 bg-slate-900 text-white"
+                                                        : "border-slate-300 text-slate-700"
+                                                }`}
+                                            >
+                                                {label}
+                                            </button>
+                                        ))}
+                                        {match.result && (
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    void handleSetMatchResult(
+                                                        null,
+                                                    )
+                                                }
+                                                disabled={isUpdatingMatch}
+                                                className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+                                            >
+                                                결과 초기화
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
                                 <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
                                     <button
                                         type="button"
@@ -308,6 +393,7 @@ function MatchPageContent() {
                             type="button"
                             className={`w-full rounded-xl px-4 py-3 text-base font-medium text-white ${
                                 isJoining ||
+                                match.result ||
                                 isFull ||
                                 match.applicationLocked ||
                                 alreadyJoined
@@ -316,6 +402,7 @@ function MatchPageContent() {
                             }`}
                             disabled={
                                 isFull ||
+                                Boolean(match.result) ||
                                 match.applicationLocked ||
                                 alreadyJoined ||
                                 isJoining
@@ -324,6 +411,8 @@ function MatchPageContent() {
                         >
                             {isJoining
                                 ? "신청 중..."
+                                : match.result
+                                  ? "경기가 종료되었습니다"
                                 : isFull
                                   ? "마감되었습니다"
                                   : match.applicationLocked

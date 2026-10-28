@@ -18,6 +18,15 @@ export default function MatchTimePicker({
 }: MatchTimePickerProps) {
     return (
         <div className="flex flex-col gap-3">
+            <input
+                type="time"
+                name={name}
+                aria-label="시간 직접 선택"
+                value={value}
+                onChange={(event) => onChange(event.target.value)}
+                required
+                className="w-full rounded-lg bg-white p-3 text-black outline-none ring-0 transition focus:border focus:border-slate-300 sm:p-4"
+            />
             <div className="flex flex-wrap gap-2">
                 {QUICK_TIMES.map((option) => (
                     <button
@@ -35,15 +44,6 @@ export default function MatchTimePicker({
                     </button>
                 ))}
             </div>
-            <input
-                type="time"
-                name={name}
-                aria-label="시간 직접 선택"
-                value={value}
-                onChange={(event) => onChange(event.target.value)}
-                required
-                className="w-full rounded-lg bg-white p-3 text-black outline-none ring-0 transition focus:border focus:border-slate-300 sm:p-4"
-            />
         </div>
     );
 }

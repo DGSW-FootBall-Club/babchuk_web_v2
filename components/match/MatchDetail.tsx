@@ -1,4 +1,5 @@
 import type { Match } from "@/types/match.type";
+import { Crown } from "lucide-react";
 
 type MatchDetailProps = {
     match: Match | null;
@@ -7,6 +8,13 @@ type MatchDetailProps = {
 export default function MatchDetail({ match }: MatchDetailProps) {
     const teamAUsers = match?.users.filter((user) => user.team === "A") ?? [];
     const teamBUsers = match?.users.filter((user) => user.team === "B") ?? [];
+    const isAuthor = (user: (typeof teamAUsers)[number]) =>
+        Boolean(
+            match &&
+                (match.author.userId && user.userId
+                    ? match.author.userId === user.userId
+                    : match.author.username === user.username),
+        );
 
     return (
         <div className="flex w-full flex-col gap-4 rounded-xl bg-white p-4 text-white sm:p-5">
@@ -54,6 +62,27 @@ export default function MatchDetail({ match }: MatchDetailProps) {
                 )}
             </div>
 
+            {match && (
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4">
+                    <span className="flex items-center gap-2 font-semibold text-slate-900">
+                        <Crown
+                            aria-hidden="true"
+                            className="h-5 w-5 fill-amber-400 text-amber-500"
+                        />
+                        방장 {match.author.name}
+                    </span>
+                    <span className="text-sm font-semibold text-slate-700">
+                        {match.result === "A_WIN"
+                            ? "A팀 승리"
+                            : match.result === "B_WIN"
+                              ? "B팀 승리"
+                              : match.result === "DRAW"
+                                ? "무승부"
+                                : "경기 결과 미입력"}
+                    </span>
+                </div>
+            )}
+
             <div className="mt-2 rounded-lg p-1 sm:p-3">
                 <p className="text-sm font-semibold text-black">참여 인원</p>
 
@@ -69,8 +98,14 @@ export default function MatchDetail({ match }: MatchDetailProps) {
                                         key={user.username}
                                         className="flex flex-col gap-1 rounded-md py-2 text-sm sm:flex-row sm:items-center sm:justify-between"
                                     >
-                                        <span className="font-bold text-black">
+                                        <span className="flex items-center gap-1 font-bold text-black">
                                             {user.name}
+                                            {isAuthor(user) && (
+                                                <Crown
+                                                    aria-label="매치 방장"
+                                                    className="h-4 w-4 fill-amber-400 text-amber-500"
+                                                />
+                                            )}
                                         </span>
                                         <span className="text-gray-700">
                                             {user.username}
@@ -96,8 +131,14 @@ export default function MatchDetail({ match }: MatchDetailProps) {
                                         key={user.username}
                                         className="flex flex-col gap-1 rounded-md py-2 text-sm sm:flex-row sm:items-center sm:justify-between"
                                     >
-                                        <span className="font-bold text-black">
+                                        <span className="flex items-center gap-1 font-bold text-black">
                                             {user.name}
+                                            {isAuthor(user) && (
+                                                <Crown
+                                                    aria-label="매치 방장"
+                                                    className="h-4 w-4 fill-amber-400 text-amber-500"
+                                                />
+                                            )}
                                         </span>
                                         <span className="text-slate-700">
                                             {user.username}

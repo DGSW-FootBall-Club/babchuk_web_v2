@@ -2,7 +2,9 @@ import { ApiError, api } from "@/lib/api";
 import type {
     CreateMatchPayload,
     Match,
+    MyMatchHistory,
     UpdateMatchPayload,
+    UpdateMatchResultPayload,
 } from "@/types/match.type";
 import type { UserRequest } from "@/types/user.type";
 
@@ -24,6 +26,20 @@ export function deleteMatch(id: string) {
     return api<void>(`/matches/${encodeURIComponent(id)}`, {
         method: "DELETE",
     });
+}
+
+export function updateMatchResult(
+    id: string,
+    payload: UpdateMatchResultPayload,
+) {
+    return api<Match>(`/matches/${encodeURIComponent(id)}/result`, {
+        method: "PATCH",
+        body: JSON.stringify(payload),
+    });
+}
+
+export function getMyMatchHistory() {
+    return api<MyMatchHistory>("/matches/my");
 }
 
 export async function getMatchById(id: string): Promise<Match | null> {

@@ -78,8 +78,8 @@ export default function MatchEditForm({
                     className="w-full rounded-lg border border-slate-200 bg-white p-3 text-black outline-none focus:border-slate-400"
                 />
                 <span className="font-normal text-slate-500">
-                    2명 이상 {MAX_MATCH_PLAYERS}명 이하로 설정해야 하며,
-                    현재 참가 인원({match.currentPlayers}명)보다 적게 설정할 수
+                    2명 이상 {MAX_MATCH_PLAYERS}명 이하로 설정해야 하며, 현재
+                    참가 인원({match.currentPlayers}명)보다 적게 설정할 수
                     없습니다.
                 </span>
             </label>
