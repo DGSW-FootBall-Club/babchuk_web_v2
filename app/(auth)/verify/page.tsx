@@ -1,13 +1,17 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { getMe } from "@/lib/api/profile";
 
 function Verify() {
     const router = useRouter();
     const params = useSearchParams();
+    const hasStarted = useRef(false);
 
     useEffect(() => {
+        if (hasStarted.current) return;
+
         const code = params.get("code");
         const state = params.get("state");
         const savedState = sessionStorage.getItem("oauth_state");
@@ -16,6 +20,7 @@ function Verify() {
             router.replace("/login?error=invalid_state");
             return;
         }
+        hasStarted.current = true;
         sessionStorage.removeItem("oauth_state");
 
         const codeVerifier = sessionStorage.getItem("code_verifier");
@@ -32,14 +37,26 @@ function Verify() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ code, codeVerifier }),
         })
-            .then((res) => {
+            .then(async (res) => {
                 if (!res.ok) {
-                    throw new Error(`OAuth token exchange failed (${res.status})`);
+                    const body = await res.json().catch(() => undefined);
+                    const message =
+                        body &&
+                        typeof body === "object" &&
+                        "message" in body &&
+                        typeof body.message === "string"
+                            ? body.message
+                            : `인증 코드 교환 실패 (HTTP ${res.status})`;
+                    throw new Error(message);
                 }
-                router.replace("/");
+                return getMe();
             })
+            .then(() => router.replace("/"))
             .catch((error: unknown) => {
-                console.error("[Auth] OAuth callback failed:", error);
+                console.error(
+                    "[Auth] OAuth callback or session check failed:",
+                    error instanceof Error ? error.message : "Unknown error",
+                );
                 router.replace("/login?error=auth_failed");
             });
     }, [params, router]);
