@@ -8,6 +8,7 @@ export type Match = {
     maxPlayers: number;
     currentPlayers: number;
     status: MatchStatus;
+    applicationLocked: boolean;
     date: string;
     time: string;
     author: MatchUser;

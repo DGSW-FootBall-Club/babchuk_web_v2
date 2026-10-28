@@ -214,6 +214,7 @@ export type Match = {
     maxPlayers: number;
     currentPlayers: number;
     status: MatchStatus;
+    applicationLocked: boolean;
     date: string;
     time: string;
     author: MatchUser;
@@ -224,7 +225,8 @@ export type Match = {
 설명:
 
 - `currentPlayers`는 현재 참여 인원 수
-- `status`는 매칭 상태
+- `status`는 정원 상태
+- `applicationLocked`는 매치 작성자가 신청을 잠갔는지 여부
 - `author`는 매치를 생성한 사람
 - `users`는 참여자 목록
 
@@ -253,6 +255,7 @@ export type CreateMatchPayload = {
 ## 5. 구현 개요
 
 - 매치 목록, 상세, 생성, 참가 요청은 `lib/api/match.ts`에서 서버 API를 호출한다.
+- 작성자 전용 잠금/셔플 UI도 `lib/api/match.ts`의 제안 API를 호출한다. 백엔드가 위 계약을 구현하기 전까지 해당 요청은 실패한다.
 - 로그인, 로그아웃, 인증된 프로필 조회는 `lib/api/profile.ts`에서 처리한다.
 - 공개 조회 요청은 로그인이나 토큰 갱신 없이 호출한다. 인증이 필요한 요청에서만 401 토큰 갱신을 시도한다.
 - API 요청은 쿠키 인증을 위해 공통 `lib/api.ts`에서 `credentials: "include"`로 호출한다.

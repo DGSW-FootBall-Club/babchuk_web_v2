@@ -33,3 +33,16 @@ export function joinMatch(id: string, user: UserRequest) {
         },
     );
 }
+
+export function setMatchApplicationLock(id: string, locked: boolean) {
+    return api<Match>(`/matches/${encodeURIComponent(id)}/applications`, {
+        method: "PATCH",
+        body: JSON.stringify({ locked }),
+    });
+}
+
+export function shuffleMatchTeams(id: string) {
+    return api<Match>(`/matches/${encodeURIComponent(id)}/shuffle`, {
+        method: "POST",
+    });
+}

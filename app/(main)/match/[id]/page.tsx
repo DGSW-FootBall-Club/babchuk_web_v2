@@ -3,7 +3,11 @@
 import BackButton from "@/components/common/BackButton";
 import MatchDetail from "@/components/match/MatchDetail";
 import useMatch from "@/hooks/useMatch";
-import { joinMatch } from "@/lib/api/match";
+import {
+    joinMatch,
+    setMatchApplicationLock,
+    shuffleMatchTeams,
+} from "@/lib/api/match";
 import Stadium from "@/public/stadium.svg";
 import { useProfileStore } from "@/stores/profileStore";
 import Image from "next/image";
@@ -45,12 +49,18 @@ function MatchPageContent() {
     const { match, isLoading, error, refresh } = useMatch(id);
     const profile = useProfileStore((state) => state.profile);
     const [isJoining, setIsJoining] = useState(false);
+    const [isUpdatingMatch, setIsUpdatingMatch] = useState(false);
     const [didJoin, setDidJoin] = useState(false);
     const isFull =
         match?.status === "full" ||
         (match !== null && match.currentPlayers >= match.maxPlayers);
     const alreadyJoined =
         didJoin || profile?.currentMatchIds?.includes(id) === true;
+    const isMatchAuthor =
+        Boolean(profile) &&
+        (match?.author.userId
+            ? match.author.userId === profile?.userId
+            : match?.author.username === profile?.username);
 
     const handleJoinMatch = async () => {
         if (!match) return;
@@ -80,6 +90,46 @@ function MatchPageContent() {
             );
         } finally {
             setIsJoining(false);
+        }
+    };
+
+    const handleToggleApplicationLock = async () => {
+        if (!match || !isMatchAuthor || isUpdatingMatch) return;
+        setIsUpdatingMatch(true);
+        try {
+            await setMatchApplicationLock(id, !match.applicationLocked);
+            await refresh();
+            toast.success(
+                match.applicationLocked
+                    ? "매치 신청을 다시 열었어요."
+                    : "매치 신청을 잠갔어요.",
+            );
+        } catch (error) {
+            toast.error(
+                error instanceof Error
+                    ? error.message
+                    : "신청 상태 변경에 실패했어요.",
+            );
+        } finally {
+            setIsUpdatingMatch(false);
+        }
+    };
+
+    const handleShuffleTeams = async () => {
+        if (!match || !isMatchAuthor || isUpdatingMatch) return;
+        setIsUpdatingMatch(true);
+        try {
+            await shuffleMatchTeams(id);
+            await refresh();
+            toast.success("참가자 팀을 섞었어요.");
+        } catch (error) {
+            toast.error(
+                error instanceof Error
+                    ? error.message
+                    : "팀 셔플에 실패했어요.",
+            );
+        } finally {
+            setIsUpdatingMatch(false);
         }
     };
 
@@ -123,6 +173,47 @@ function MatchPageContent() {
                             />
                         </div>
                         <MatchDetail match={match} />
+                        {isMatchAuthor && (
+                            <section className="flex flex-col gap-3 rounded-xl bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-5">
+                                <div>
+                                    <h2 className="font-semibold text-slate-900">
+                                        매치 관리
+                                    </h2>
+                                    <p className="mt-1 text-sm text-slate-600">
+                                        작성자만 신청 상태와 팀 배정을 관리할 수
+                                        있습니다.
+                                    </p>
+                                </div>
+                                <div className="flex flex-col gap-2 sm:flex-row">
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            void handleToggleApplicationLock()
+                                        }
+                                        disabled={isUpdatingMatch}
+                                        className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+                                    >
+                                        {isUpdatingMatch
+                                            ? "처리 중..."
+                                            : match.applicationLocked
+                                              ? "신청 잠금 해제"
+                                              : "신청 잠그기"}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            void handleShuffleTeams()
+                                        }
+                                        disabled={isUpdatingMatch}
+                                        className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+                                    >
+                                        {isUpdatingMatch
+                                            ? "처리 중..."
+                                            : "팀 셔플"}
+                                    </button>
+                                </div>
+                            </section>
+                        )}
                         {error && (
                             <p role="status" className="text-sm text-red-600">
                                 매치 정보 갱신에 실패했습니다: {error}
@@ -138,17 +229,24 @@ function MatchPageContent() {
                         <button
                             type="button"
                             className={`w-full rounded-xl px-4 py-3 text-base font-medium text-white ${
-                                isFull || alreadyJoined
+                                isFull || match.applicationLocked || alreadyJoined
                                     ? "bg-gray-400"
                                     : "bg-black"
                             }`}
-                            disabled={isFull || alreadyJoined || isJoining}
+                            disabled={
+                                isFull ||
+                                match.applicationLocked ||
+                                alreadyJoined ||
+                                isJoining
+                            }
                             onClick={handleJoinMatch}
                         >
                             {isJoining
                                 ? "신청 중..."
                                 : isFull
                                   ? "마감되었습니다"
+                                  : match.applicationLocked
+                                    ? "신청이 잠겼습니다"
                                   : alreadyJoined
                                     ? "이미 신청했습니다"
                                     : "참가 신청하기"}

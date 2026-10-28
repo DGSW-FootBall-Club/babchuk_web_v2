@@ -16,12 +16,17 @@ export default function MatchDetail({ match }: MatchDetailProps) {
                 </h2>
                 <span
                     className={`self-start rounded-full px-2.5 py-1 text-xs font-semibold ${
-                        match?.status === "full"
+                        match?.status === "full" ||
+                        match?.applicationLocked
                             ? "bg-red-500 text-white"
                             : "bg-emerald-500 text-white"
                     }`}
                 >
-                    {match?.status === "full" ? "신청 마감" : "신청 가능"}
+                    {match?.status === "full"
+                        ? "정원 마감"
+                        : match?.applicationLocked
+                          ? "신청 잠김"
+                          : "신청 가능"}
                 </span>
             </div>
 
