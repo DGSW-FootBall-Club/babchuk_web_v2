@@ -83,12 +83,13 @@ export default function MatchForm() {
                 </div>
                 {!canSubmit && (
                     <p className="text-sm text-slate-600">
-                        매치를 만들려면 로그인과 프로필 조회가 필요합니다.
+                        로그인하지 않아도 이 페이지를 확인할 수 있습니다. 매치
+                        생성에는 로그인이 필요합니다.
                     </p>
                 )}
                 <button
                     type="submit"
-                    disabled={isSubmitting || !canSubmit}
+                    disabled={isSubmitting}
                     className="mt-4 w-full cursor-pointer rounded-lg bg-black px-4 py-3 font-semibold text-white shadow-lg transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:mt-6"
                 >
                     {isSubmitting ? "생성 중..." : "매치 만들기"}

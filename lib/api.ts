@@ -26,7 +26,7 @@ function refreshToken(): Promise<boolean> {
         credentials: "include",
     })
         .then((res) => {
-            if (!res.ok) {
+            if (!res.ok && res.status !== 401) {
                 console.error(
                     "[API] POST /auth/refresh failed:",
                     `HTTP ${res.status}`,
@@ -79,12 +79,6 @@ export async function api<T = unknown>(
         if (res.status === 401 && !NO_REFRESH.includes(path)) {
             const ok = await refreshToken();
             if (!ok) {
-                if (
-                    typeof window !== "undefined" &&
-                    window.location.pathname !== "/login"
-                ) {
-                    window.location.href = "/login";
-                }
                 throw new ApiError(401);
             }
             res = await request();
