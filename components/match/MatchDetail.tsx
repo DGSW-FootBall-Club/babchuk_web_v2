@@ -16,8 +16,7 @@ export default function MatchDetail({ match }: MatchDetailProps) {
                 </h2>
                 <span
                     className={`self-start rounded-full px-2.5 py-1 text-xs font-semibold ${
-                        match?.status === "full" ||
-                        match?.applicationLocked
+                        match?.status === "full" || match?.applicationLocked
                             ? "bg-red-500 text-white"
                             : "bg-emerald-500 text-white"
                     }`}
