@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { createMatch } from "@/lib/api/match";
 import { useProfileStore } from "@/stores/profileStore";
+import { MAX_MATCH_PLAYERS } from "@/types/match.type";
 
 export default function useMatchForm() {
     const router = useRouter();
@@ -25,6 +26,7 @@ export default function useMatchForm() {
             !matchName.trim() ||
             !Number.isInteger(maxPlayers) ||
             maxPlayers < 2 ||
+            maxPlayers > MAX_MATCH_PLAYERS ||
             !date ||
             !time
         ) {
@@ -55,7 +57,7 @@ export default function useMatchForm() {
             });
 
             toast.success("매치가 생성되었어요.");
-            router.push("/match");
+            router.push("/");
         } catch (err) {
             toast.error(
                 err instanceof Error ? err.message : "매치 생성에 실패했어요.",
@@ -69,6 +71,7 @@ export default function useMatchForm() {
         matchName,
         setMatchName,
         maxPlayers,
+        maxPlayersLimit: MAX_MATCH_PLAYERS,
         setMaxPlayers,
         date,
         setDate,

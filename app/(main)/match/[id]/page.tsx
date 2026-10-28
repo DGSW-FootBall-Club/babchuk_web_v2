@@ -2,16 +2,20 @@
 
 import BackButton from "@/components/common/BackButton";
 import MatchDetail from "@/components/match/MatchDetail";
+import MatchEditForm from "@/components/match/MatchEditForm";
 import useMatch from "@/hooks/useMatch";
 import {
+    deleteMatch,
     joinMatch,
     setMatchApplicationLock,
     shuffleMatchTeams,
+    updateMatch,
 } from "@/lib/api/match";
 import Stadium from "@/public/stadium.svg";
 import { useProfileStore } from "@/stores/profileStore";
+import type { UpdateMatchPayload } from "@/types/match.type";
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Suspense, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -46,10 +50,13 @@ function MatchPageSkeleton() {
 
 function MatchPageContent() {
     const { id } = useParams<{ id: string }>();
+    const router = useRouter();
     const { match, isLoading, error, refresh } = useMatch(id);
     const profile = useProfileStore((state) => state.profile);
     const [isJoining, setIsJoining] = useState(false);
     const [isUpdatingMatch, setIsUpdatingMatch] = useState(false);
+    const [isEditingMatch, setIsEditingMatch] = useState(false);
+    const [isDeletingMatch, setIsDeletingMatch] = useState(false);
     const [didJoin, setDidJoin] = useState(false);
     const isFull =
         match?.status === "full" ||
@@ -66,8 +73,10 @@ function MatchPageContent() {
         if (!match) return;
         if (!profile) {
             toast.error("참가 신청은 로그인 후 이용할 수 있습니다.");
+            router.push("/login");
             return;
         }
+        if (isJoining) return;
         if (isFull) {
             toast.error("마감된 매치는 신청할 수 없습니다.");
             return;
@@ -80,8 +89,8 @@ function MatchPageContent() {
                 username: profile.username,
             });
             setDidJoin(true);
-            toast.success("참가 신청이 완료되었습니다.");
-            void refresh();
+            await refresh();
+            toast.success("참가 신청이 완료되었고 매치 정보를 갱신했어요.");
         } catch (error) {
             toast.error(
                 error instanceof Error
@@ -133,6 +142,46 @@ function MatchPageContent() {
         }
     };
 
+    const handleUpdateMatch = async (payload: UpdateMatchPayload) => {
+        if (!match || !isMatchAuthor || isUpdatingMatch) return;
+        setIsUpdatingMatch(true);
+        try {
+            await updateMatch(id, payload);
+            await refresh();
+            setIsEditingMatch(false);
+            toast.success("매치 정보를 수정했어요.");
+        } catch (error) {
+            toast.error(
+                error instanceof Error
+                    ? error.message
+                    : "매치 정보 수정에 실패했어요.",
+            );
+        } finally {
+            setIsUpdatingMatch(false);
+        }
+    };
+
+    const handleDeleteMatch = async () => {
+        if (!match || !isMatchAuthor || isDeletingMatch) return;
+        if (!window.confirm("이 매치를 삭제할까요? 삭제 후에는 되돌릴 수 없습니다.")) {
+            return;
+        }
+
+        setIsDeletingMatch(true);
+        try {
+            await deleteMatch(id);
+            toast.success("매치를 삭제했어요.");
+            router.push("/match");
+        } catch (error) {
+            toast.error(
+                error instanceof Error
+                    ? error.message
+                    : "매치 삭제에 실패했어요.",
+            );
+            setIsDeletingMatch(false);
+        }
+    };
+
     if (isLoading) return <MatchPageSkeleton />;
 
     return (
@@ -174,17 +223,35 @@ function MatchPageContent() {
                         </div>
                         <MatchDetail match={match} />
                         {isMatchAuthor && (
-                            <section className="flex flex-col gap-3 rounded-xl bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-5">
+                            <section className="flex flex-col gap-4 rounded-xl bg-white p-4 shadow-sm sm:p-5">
                                 <div>
                                     <h2 className="font-semibold text-slate-900">
                                         매치 관리
                                     </h2>
                                     <p className="mt-1 text-sm text-slate-600">
-                                        작성자만 신청 상태와 팀 배정을 관리할 수
-                                        있습니다.
+                                        작성자만 매치 정보와 신청 상태, 팀 배정을
+                                        관리할 수 있습니다.
                                     </p>
                                 </div>
-                                <div className="flex flex-col gap-2 sm:flex-row">
+                                <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setIsEditingMatch((editing) => !editing)
+                                        }
+                                        disabled={isUpdatingMatch || isDeletingMatch}
+                                        className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+                                    >
+                                        {isEditingMatch ? "수정 취소" : "매치 수정"}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => void handleDeleteMatch()}
+                                        disabled={isDeletingMatch || isUpdatingMatch}
+                                        className="rounded-lg border border-red-200 px-4 py-2 text-sm font-semibold text-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                                    >
+                                        {isDeletingMatch ? "삭제 중..." : "매치 삭제"}
+                                    </button>
                                     <button
                                         type="button"
                                         onClick={() =>
@@ -212,6 +279,17 @@ function MatchPageContent() {
                                             : "팀 셔플"}
                                     </button>
                                 </div>
+                                {isEditingMatch && (
+                                    <MatchEditForm
+                                        key={match.id}
+                                        match={match}
+                                        isSaving={isUpdatingMatch}
+                                        onCancel={() => setIsEditingMatch(false)}
+                                        onSave={(payload) =>
+                                            void handleUpdateMatch(payload)
+                                        }
+                                    />
+                                )}
                             </section>
                         )}
                         {error && (
@@ -229,7 +307,10 @@ function MatchPageContent() {
                         <button
                             type="button"
                             className={`w-full rounded-xl px-4 py-3 text-base font-medium text-white ${
-                                isFull || match.applicationLocked || alreadyJoined
+                                isJoining ||
+                                isFull ||
+                                match.applicationLocked ||
+                                alreadyJoined
                                     ? "bg-gray-400"
                                     : "bg-black"
                             }`}

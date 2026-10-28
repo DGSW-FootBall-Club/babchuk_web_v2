@@ -1,11 +1,28 @@
 import { ApiError, api } from "@/lib/api";
-import type { CreateMatchPayload, Match } from "@/types/match.type";
+import type {
+    CreateMatchPayload,
+    Match,
+    UpdateMatchPayload,
+} from "@/types/match.type";
 import type { UserRequest } from "@/types/user.type";
 
 export function createMatch(payload: CreateMatchPayload) {
     return api<Match>("/matches", {
         method: "POST",
         body: JSON.stringify(payload),
+    });
+}
+
+export function updateMatch(id: string, payload: UpdateMatchPayload) {
+    return api<Match>(`/matches/${encodeURIComponent(id)}`, {
+        method: "PATCH",
+        body: JSON.stringify(payload),
+    });
+}
+
+export function deleteMatch(id: string) {
+    return api<void>(`/matches/${encodeURIComponent(id)}`, {
+        method: "DELETE",
     });
 }
 

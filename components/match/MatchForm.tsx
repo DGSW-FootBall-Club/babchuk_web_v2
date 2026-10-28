@@ -1,6 +1,7 @@
 "use client";
 
 import BackButton from "@/components/common/BackButton";
+import MatchTimePicker from "@/components/match/MatchTimePicker";
 import useMatchForm from "@/hooks/useMatchForm";
 
 export default function MatchForm() {
@@ -9,6 +10,7 @@ export default function MatchForm() {
         setMatchName,
         maxPlayers,
         setMaxPlayers,
+        maxPlayersLimit,
         date,
         setDate,
         time,
@@ -55,8 +57,12 @@ export default function MatchForm() {
                         placeholder="최대 인원을 입력해 주세요."
                         className="w-full rounded-lg bg-white p-3 text-black outline-none ring-0 transition focus:border focus:border-slate-300 sm:p-4"
                         min={2}
+                        max={maxPlayersLimit}
                         required
                     />
+                    <span className="text-sm font-normal text-slate-500">
+                        최대 {maxPlayersLimit}명까지 신청할 수 있습니다.
+                    </span>
                 </label>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <label className="flex flex-col gap-2 text-sm font-medium text-slate-700 sm:text-base">
@@ -70,24 +76,14 @@ export default function MatchForm() {
                             className="w-full rounded-lg bg-white p-3 text-black outline-none ring-0 transition focus:border focus:border-slate-300 sm:p-4"
                         />
                     </label>
-                    <label className="flex flex-col gap-2 text-sm font-medium text-slate-700 sm:text-base">
-                        시간
-                        <input
-                            type="time"
-                            name="time"
+                    <div className="flex flex-col gap-2 text-sm font-medium text-slate-700 sm:text-base">
+                        <span>시간</span>
+                        <MatchTimePicker
                             value={time}
-                            onChange={(event) => setTime(event.target.value)}
-                            required
-                            className="w-full rounded-lg bg-white p-3 text-black outline-none ring-0 transition focus:border focus:border-slate-300 sm:p-4"
+                            onChange={setTime}
                         />
-                    </label>
+                    </div>
                 </div>
-                {!canSubmit && !profileIsLoading && (
-                    <p className="text-sm text-slate-600">
-                        로그인하지 않아도 이 페이지를 확인할 수 있습니다. 매치
-                        생성에는 로그인이 필요합니다.
-                    </p>
-                )}
                 <button
                     type="submit"
                     disabled={isSubmitting || profileIsLoading}
@@ -97,7 +93,9 @@ export default function MatchForm() {
                         ? "프로필 확인 중..."
                         : isSubmitting
                           ? "생성 중..."
-                          : "매치 만들기"}
+                          : canSubmit
+                            ? "매치 만들기"
+                            : "로그인 후 이용 가능"}
                 </button>
             </div>
         </form>

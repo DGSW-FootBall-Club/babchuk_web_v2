@@ -6,6 +6,7 @@ function requiresAuthentication(path: string, method: string) {
     return (
         (path === "/auth/getme" && method === "GET") ||
         (path === "/matches" && method === "POST") ||
+        (/^\/matches\/[^/]+$/.test(path) && ["PATCH", "DELETE"].includes(method)) ||
         (/^\/matches\/[^/]+\/join$/.test(path) && method === "POST") ||
         (/^\/matches\/[^/]+\/applications$/.test(path) &&
             method === "PATCH") ||
