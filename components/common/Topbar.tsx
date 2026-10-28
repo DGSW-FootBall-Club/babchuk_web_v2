@@ -27,6 +27,7 @@ export default function Topbar() {
     return (
         <header className="sticky top-0 z-50 h-16 w-full bg-white shadow-sm sm:h-20">
             <div className="mx-auto grid h-full w-full max-w-7xl grid-cols-3 items-center px-4 sm:px-6 lg:px-8">
+                <div />
                 <Link href="/" className="flex justify-center">
                     <Image
                         src={logo}
