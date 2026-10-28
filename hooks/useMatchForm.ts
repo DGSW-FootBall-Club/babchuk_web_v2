@@ -75,6 +75,7 @@ export default function useMatchForm() {
         time,
         setTime,
         canSubmit: Boolean(profile) && !profileIsLoading,
+        profileIsLoading,
         isSubmitting,
         handleSubmit,
     };

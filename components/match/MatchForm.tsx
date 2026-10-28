@@ -14,6 +14,7 @@ export default function MatchForm() {
         time,
         setTime,
         canSubmit,
+        profileIsLoading,
         isSubmitting,
         handleSubmit,
     } = useMatchForm();
@@ -81,7 +82,7 @@ export default function MatchForm() {
                         />
                     </label>
                 </div>
-                {!canSubmit && (
+                {!canSubmit && !profileIsLoading && (
                     <p className="text-sm text-slate-600">
                         로그인하지 않아도 이 페이지를 확인할 수 있습니다. 매치
                         생성에는 로그인이 필요합니다.
@@ -89,10 +90,14 @@ export default function MatchForm() {
                 )}
                 <button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || profileIsLoading}
                     className="mt-4 w-full cursor-pointer rounded-lg bg-black px-4 py-3 font-semibold text-white shadow-lg transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:mt-6"
                 >
-                    {isSubmitting ? "생성 중..." : "매치 만들기"}
+                    {profileIsLoading
+                        ? "프로필 확인 중..."
+                        : isSubmitting
+                          ? "생성 중..."
+                          : "매치 만들기"}
                 </button>
             </div>
         </form>
