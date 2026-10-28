@@ -1,13 +1,10 @@
 import HoloCard from "@/components/home/HoloCard";
-import MatchCard from "@/components/home/MatchCard";
+import UpcomingMatches from "@/components/home/UpcomingMatches";
 import createMatch from "@/public/create_match.svg";
 import viewMatch from "@/public/view_match.png";
 import HistoryCard from "@/components/home/HistoryCard";
-import { mockMatchList } from "@/lib/mock/matchData";
 
 export default function Home() {
-    const upcomingMatches = mockMatchList.slice(0, 3);
-
     return (
         <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-0 sm:gap-8">
             <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
@@ -29,27 +26,7 @@ export default function Home() {
                     <h1 className="text-xl font-bold sm:text-2xl xl:text-3xl">
                         다가오는 일정
                     </h1>
-                    <div className="flex flex-1 flex-col gap-3">
-                        {upcomingMatches.map((match) => (
-                            <MatchCard
-                                key={match.id}
-                                id={match.id}
-                                redteam={
-                                    match.users.filter(
-                                        (user) => user.team === "A",
-                                    ).length
-                                }
-                                blueteam={
-                                    match.users.filter(
-                                        (user) => user.team === "B",
-                                    ).length
-                                }
-                                status={match.status}
-                                date={match.date}
-                                time={match.time}
-                            />
-                        ))}
-                    </div>
+                    <UpcomingMatches />
                 </section>
             </section>
             <HistoryCard />

@@ -13,10 +13,7 @@ export default function MatchForm() {
         setDate,
         time,
         setTime,
-        authorName,
-        setAuthorName,
-        authorUsername,
-        setAuthorUsername,
+        canSubmit,
         isSubmitting,
         handleSubmit,
     } = useMatchForm();
@@ -84,39 +81,14 @@ export default function MatchForm() {
                         />
                     </label>
                 </div>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <label className="flex flex-col gap-2 text-sm font-medium text-slate-700 sm:text-base">
-                        작성자 이름
-                        <input
-                            type="text"
-                            name="authorName"
-                            value={authorName}
-                            onChange={(event) =>
-                                setAuthorName(event.target.value)
-                            }
-                            placeholder="작성자 이름을 입력해 주세요."
-                            required
-                            className="w-full rounded-lg bg-white p-3 text-black outline-none ring-0 transition focus:border focus:border-slate-300 sm:p-4"
-                        />
-                    </label>
-                    <label className="flex flex-col gap-2 text-sm font-medium text-slate-700 sm:text-base">
-                        작성자 사용자 이름
-                        <input
-                            type="text"
-                            name="authorUsername"
-                            value={authorUsername}
-                            onChange={(event) =>
-                                setAuthorUsername(event.target.value)
-                            }
-                            placeholder="작성자 사용자 이름을 입력해 주세요."
-                            required
-                            className="w-full rounded-lg bg-white p-3 text-black outline-none ring-0 transition focus:border focus:border-slate-300 sm:p-4"
-                        />
-                    </label>
-                </div>
+                {!canSubmit && (
+                    <p className="text-sm text-slate-600">
+                        매치를 만들려면 로그인과 프로필 조회가 필요합니다.
+                    </p>
+                )}
                 <button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || !canSubmit}
                     className="mt-4 w-full cursor-pointer rounded-lg bg-black px-4 py-3 font-semibold text-white shadow-lg transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:mt-6"
                 >
                     {isSubmitting ? "생성 중..." : "매치 만들기"}

@@ -12,6 +12,15 @@ function base64Url(bytes: Uint8Array) {
 export default function useLogin() {
     const login = async () => {
         try {
+            const authorizeUrl = process.env.NEXT_PUBLIC_OAUTH_AUTHORIZE_URL;
+            const clientId = process.env.NEXT_PUBLIC_OAUTH_CLIENT_ID;
+            const redirectUri = process.env.NEXT_PUBLIC_OAUTH_REDIRECT_URI;
+            const scope = process.env.NEXT_PUBLIC_OAUTH_SCOPE;
+
+            if (!authorizeUrl || !clientId || !redirectUri || !scope) {
+                throw new Error("OAuth 환경 변수가 설정되지 않았습니다.");
+            }
+
             const verifier = base64Url(
                 crypto.getRandomValues(new Uint8Array(32)),
             );
@@ -27,16 +36,16 @@ export default function useLogin() {
 
             const params = new URLSearchParams({
                 response_type: "code",
-                client_id: process.env.NEXT_PUBLIC_OAUTH_CLIENT_ID!,
-                redirect_uri: process.env.NEXT_PUBLIC_OAUTH_REDIRECT_URI!,
-                scope: process.env.NEXT_PUBLIC_OAUTH_SCOPE!,
+                client_id: clientId,
+                redirect_uri: redirectUri,
+                scope,
                 state,
                 code_challenge: challenge,
                 code_challenge_method: "S256",
             });
 
             toast.success("로그인 페이지로 이동합니다.");
-            window.location.href = `${process.env.NEXT_PUBLIC_OAUTH_AUTHORIZE_URL}?${params}`;
+            window.location.href = `${authorizeUrl}?${params}`;
         } catch (error) {
             toast.error(
                 error instanceof Error

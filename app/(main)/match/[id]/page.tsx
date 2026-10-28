@@ -1,50 +1,15 @@
 "use client";
 
-import MatchDetail from "@/components/match/MatchDetail";
-import { mockMatches } from "@/lib/mock/matchData";
-import type { Match } from "@/types/match.type";
-import Stadium from "@/public/stadium.svg";
 import BackButton from "@/components/common/BackButton";
+import MatchDetail from "@/components/match/MatchDetail";
+import useMatch from "@/hooks/useMatch";
+import { joinMatch } from "@/lib/api/match";
+import Stadium from "@/public/stadium.svg";
+import { useProfileStore } from "@/stores/profileStore";
 import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
 import { Suspense, useState } from "react";
-import { usePathname } from "next/navigation";
 import toast from "react-hot-toast";
-
-type MatchResource = {
-    status: "pending" | "resolved";
-    promise?: Promise<Match | null>;
-    result?: Match | null;
-};
-
-const matchResourceMap = new Map<string, MatchResource>();
-
-function readMatch(id: string): Match | null {
-    if (!id) {
-        return null;
-    }
-
-    let resource = matchResourceMap.get(id);
-
-    if (!resource) {
-        resource = {
-            status: "pending",
-            promise: Promise.resolve().then(() => {
-                const match =
-                    mockMatches.find((item) => item.id === id) ?? null;
-                resource!.status = "resolved";
-                resource!.result = match;
-                return match;
-            }),
-        };
-        matchResourceMap.set(id, resource);
-    }
-
-    if (resource.status === "pending") {
-        throw resource.promise;
-    }
-
-    return resource.result ?? null;
-}
 
 function MatchPageSkeleton() {
     return (
@@ -66,7 +31,6 @@ function MatchPageSkeleton() {
                     </div>
                 </section>
             </div>
-
             <div className="fixed inset-x-0 bottom-0 z-50 px-4 pb-[calc(env(safe-area-inset-bottom)+0.5rem)]">
                 <div className="mx-auto w-full max-w-4xl">
                     <div className="h-12 w-full animate-pulse rounded-xl bg-slate-200" />
@@ -76,43 +40,39 @@ function MatchPageSkeleton() {
     );
 }
 
-function MatchPageContent({ id }: { id: string }) {
-    const match = readMatch(id);
+function MatchPageContent() {
+    const { id } = useParams<{ id: string }>();
+    const router = useRouter();
+    const { match, isLoading, error, refresh } = useMatch(id);
+    const profile = useProfileStore((state) => state.profile);
     const [isJoining, setIsJoining] = useState(false);
-    const isFull = (match?.currentPlayers ?? 0) >= (match?.maxPlayers ?? 0);
+    const [didJoin, setDidJoin] = useState(false);
+    const isFull =
+        match?.status === "full" ||
+        (match !== null && match.currentPlayers >= match.maxPlayers);
+    const alreadyJoined =
+        didJoin || profile?.currentMatchIds.includes(id) === true;
 
     const handleJoinMatch = async () => {
-        if (!match) {
-            toast.error("매치 정보를 불러오지 못했습니다.");
+        if (!match) return;
+        if (!profile) {
+            router.push("/login");
             return;
         }
-
         if (isFull) {
             toast.error("마감된 매치는 신청할 수 없습니다.");
             return;
         }
 
         setIsJoining(true);
-
         try {
-            const nextPlayers = match.currentPlayers + 1;
-            const nextMatch: Match = {
-                ...match,
-                currentPlayers: nextPlayers,
-                status: nextPlayers >= match.maxPlayers ? "full" : "pending",
-            };
-
-            const index = mockMatches.findIndex((item) => item.id === match.id);
-            if (index >= 0) {
-                mockMatches[index] = nextMatch;
-            }
-
-            matchResourceMap.set(id, {
-                status: "resolved",
-                result: nextMatch,
+            await joinMatch(id, {
+                name: profile.name,
+                username: profile.username,
             });
-
+            setDidJoin(true);
             toast.success("참가 신청이 완료되었습니다.");
+            void refresh();
         } catch (error) {
             toast.error(
                 error instanceof Error
@@ -123,6 +83,8 @@ function MatchPageContent({ id }: { id: string }) {
             setIsJoining(false);
         }
     };
+
+    if (isLoading) return <MatchPageSkeleton />;
 
     return (
         <div className="mx-auto flex min-h-screen w-full max-w-4xl flex-col items-center pb-20">
@@ -136,46 +98,73 @@ function MatchPageContent({ id }: { id: string }) {
                         매치 정보
                     </h1>
                 </div>
-                <section className="mt-4 flex w-full flex-col gap-8">
-                    <div className="h-56 w-full overflow-hidden rounded-xl sm:h-64 lg:h-72">
-                        <Image
-                            src={Stadium}
-                            alt="stadium image"
-                            className="h-full w-full object-cover"
-                        />
+
+                {error ? (
+                    <div className="mt-8 flex flex-col items-center gap-3 rounded-xl bg-white p-8 text-center">
+                        <p className="text-slate-600">{error}</p>
+                        <button
+                            type="button"
+                            onClick={() => void refresh()}
+                            className="font-semibold underline"
+                        >
+                            다시 시도
+                        </button>
                     </div>
-                    <MatchDetail match={match} />
-                </section>
+                ) : !match ? (
+                    <p className="mt-8 rounded-xl bg-white p-8 text-center text-slate-600">
+                        매치를 찾을 수 없습니다.
+                    </p>
+                ) : (
+                    <section className="mt-4 flex w-full flex-col gap-8">
+                        <div className="h-56 w-full overflow-hidden rounded-xl sm:h-64 lg:h-72">
+                            <Image
+                                src={Stadium}
+                                alt="축구 경기장"
+                                className="h-full w-full object-cover"
+                            />
+                        </div>
+                        <MatchDetail match={match} />
+                        {error && (
+                            <p role="status" className="text-sm text-red-600">
+                                매치 정보 갱신에 실패했습니다: {error}
+                            </p>
+                        )}
+                    </section>
+                )}
             </div>
 
-            <div className="fixed inset-x-0 bottom-0 z-50 px-4 pb-[calc(env(safe-area-inset-bottom)+0.5rem)]">
-                <div className="mx-auto w-full max-w-4xl">
-                    <button
-                        className={`w-full rounded-xl px-4 py-3 text-base font-medium text-white ${
-                            isFull ? "bg-gray-400" : "bg-black"
-                        }`}
-                        disabled={isFull || isJoining}
-                        onClick={handleJoinMatch}
-                    >
-                        {isJoining
-                            ? "신청 중..."
-                            : isFull
-                              ? "마감되었습니다"
-                              : "참가 신청하기"}
-                    </button>
+            {match && !error && (
+                <div className="fixed inset-x-0 bottom-0 z-50 px-4 pb-[calc(env(safe-area-inset-bottom)+0.5rem)]">
+                    <div className="mx-auto w-full max-w-4xl">
+                        <button
+                            type="button"
+                            className={`w-full rounded-xl px-4 py-3 text-base font-medium text-white ${
+                                isFull || alreadyJoined
+                                    ? "bg-gray-400"
+                                    : "bg-black"
+                            }`}
+                            disabled={isFull || alreadyJoined || isJoining}
+                            onClick={handleJoinMatch}
+                        >
+                            {isJoining
+                                ? "신청 중..."
+                                : isFull
+                                  ? "마감되었습니다"
+                                  : alreadyJoined
+                                    ? "이미 신청했습니다"
+                                    : "참가 신청하기"}
+                        </button>
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 }
 
-export default function Match() {
-    const pathname = usePathname();
-    const id = pathname.split("/").filter(Boolean).at(-1) ?? "";
-
+export default function MatchPage() {
     return (
         <Suspense fallback={<MatchPageSkeleton />}>
-            <MatchPageContent id={id} />
+            <MatchPageContent />
         </Suspense>
     );
 }

@@ -1,4 +1,4 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL?.replace(/\/+$/, "");
 
 const NO_REFRESH = ["/auth/token", "/auth/refresh"];
 
@@ -7,7 +7,14 @@ export class ApiError extends Error {
         public status: number,
         public body?: unknown,
     ) {
-        super(`API ${status}`);
+        const message =
+            body &&
+            typeof body === "object" &&
+            "message" in body &&
+            typeof body.message === "string"
+                ? body.message
+                : `요청에 실패했어요. (${status})`;
+        super(message);
     }
 }
 
@@ -30,6 +37,10 @@ export async function api<T = unknown>(
     path: string,
     init: RequestInit = {},
 ): Promise<T> {
+    if (!BASE_URL) {
+        throw new Error("NEXT_PUBLIC_API_URL 환경 변수가 설정되지 않았습니다.");
+    }
+
     const request = () => {
         const headers = new Headers(init.headers);
         if (

@@ -4,12 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 
 type HoloCardProps = {
-    id?: string;
+    id: string;
     redteam: number;
     blueteam: number;
     status: "full" | "pending";
-    date?: string;
-    time?: string;
+    date: string;
+    time: string;
 };
 
 export default function MatchCard({
@@ -17,8 +17,8 @@ export default function MatchCard({
     redteam,
     blueteam,
     status,
-    date = "2023.06.30",
-    time = "오후 3:00",
+    date,
+    time,
 }: HoloCardProps) {
     const cardContent = (
         <div className="relative flex min-h-32 items-center justify-between gap-2 rounded-lg bg-white p-4 pt-8 shadow-md sm:gap-4 sm:p-5 sm:pt-8">
@@ -72,10 +72,6 @@ export default function MatchCard({
             </div>
         </div>
     );
-
-    if (!id) {
-        return cardContent;
-    }
 
     return (
         <Link href={`/match/${id}`} className="block">
