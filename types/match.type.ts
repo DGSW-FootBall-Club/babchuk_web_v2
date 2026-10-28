@@ -1,4 +1,4 @@
-import type { MatchUser, UserRequest } from "./user.type";
+import type { MatchUser, Profile, UserRequest } from "./user.type";
 
 export const MAX_MATCH_PLAYERS = 24;
 
@@ -15,6 +15,10 @@ export type MyMatchHistory = {
     currentMatches: Match[];
     participatedMatches: Match[];
     stats: MatchRecordStats;
+};
+
+export type PublicMatchHistory = MyMatchHistory & {
+    profile: Profile;
 };
 
 export type Match = {

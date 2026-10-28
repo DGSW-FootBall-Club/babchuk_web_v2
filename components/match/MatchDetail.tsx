@@ -1,5 +1,6 @@
 import type { Match } from "@/types/match.type";
 import { Crown } from "lucide-react";
+import Link from "next/link";
 
 type MatchDetailProps = {
     match: Match | null;
@@ -69,7 +70,13 @@ export default function MatchDetail({ match }: MatchDetailProps) {
                             aria-hidden="true"
                             className="h-5 w-5 fill-amber-400 text-amber-500"
                         />
-                        방장 {match.author.name}
+                        방장{" "}
+                        <Link
+                            href={`/profile/${encodeURIComponent(match.author.username)}`}
+                            className="underline decoration-slate-400 underline-offset-2 hover:text-blue-700"
+                        >
+                            {match.author.name}
+                        </Link>
                     </span>
                     <span className="text-sm font-semibold text-slate-700">
                         {match.result === "A_WIN"
@@ -99,7 +106,12 @@ export default function MatchDetail({ match }: MatchDetailProps) {
                                         className="flex flex-col gap-1 rounded-md py-2 text-sm sm:flex-row sm:items-center sm:justify-between"
                                     >
                                         <span className="flex items-center gap-1 font-bold text-black">
-                                            {user.name}
+                                            <Link
+                                                href={`/profile/${encodeURIComponent(user.username)}`}
+                                                className="hover:text-blue-700 hover:underline"
+                                            >
+                                                {user.name}
+                                            </Link>
                                             {isAuthor(user) && (
                                                 <Crown
                                                     aria-label="매치 방장"
@@ -132,7 +144,12 @@ export default function MatchDetail({ match }: MatchDetailProps) {
                                         className="flex flex-col gap-1 rounded-md py-2 text-sm sm:flex-row sm:items-center sm:justify-between"
                                     >
                                         <span className="flex items-center gap-1 font-bold text-black">
-                                            {user.name}
+                                            <Link
+                                                href={`/profile/${encodeURIComponent(user.username)}`}
+                                                className="hover:text-blue-700 hover:underline"
+                                            >
+                                                {user.name}
+                                            </Link>
                                             {isAuthor(user) && (
                                                 <Crown
                                                     aria-label="매치 방장"

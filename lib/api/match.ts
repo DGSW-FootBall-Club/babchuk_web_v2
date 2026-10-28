@@ -3,6 +3,7 @@ import type {
     CreateMatchPayload,
     Match,
     MyMatchHistory,
+    PublicMatchHistory,
     UpdateMatchPayload,
     UpdateMatchResultPayload,
 } from "@/types/match.type";
@@ -40,6 +41,12 @@ export function updateMatchResult(
 
 export function getMyMatchHistory() {
     return api<MyMatchHistory>("/matches/my");
+}
+
+export function getUserMatchHistory(username: string) {
+    return api<PublicMatchHistory>(
+        `/matches/users/${encodeURIComponent(username)}`,
+    );
 }
 
 export async function getMatchById(id: string): Promise<Match | null> {

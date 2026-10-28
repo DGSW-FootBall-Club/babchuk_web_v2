@@ -59,6 +59,13 @@ export default function ProfilePage() {
     const [isHistoryLoading, setIsHistoryLoading] = useState(true);
     const [historyError, setHistoryError] = useState<string | null>(null);
     const [retry, setRetry] = useState(0);
+    const completedMatches = history
+        ? history.stats.wins + history.stats.losses + history.stats.draws
+        : 0;
+    const winRate =
+        history && completedMatches > 0
+            ? ((history.stats.wins / completedMatches) * 100).toFixed(1)
+            : "0.0";
 
     useEffect(() => {
         if (!profile) return;
@@ -148,7 +155,7 @@ export default function ProfilePage() {
                         <p className="mt-2 text-sm text-slate-600">
                             참가한 경기 {history.participatedMatches.length}경기
                         </p>
-                        <div className="mt-4 grid grid-cols-3 gap-3">
+                        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
                             {[
                                 {
                                     label: "승리",
@@ -164,6 +171,11 @@ export default function ProfilePage() {
                                     label: "무승부",
                                     value: history.stats.draws,
                                     style: "text-slate-700",
+                                },
+                                {
+                                    label: "승률",
+                                    value: `${winRate}%`,
+                                    style: "text-blue-700",
                                 },
                             ].map((stat) => (
                                 <div
