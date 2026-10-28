@@ -3,7 +3,7 @@
 ## 1. 프로젝트 개요
 
 
-로그인은 `/auth/login`으로 username/name을 전송하고, 서버가 발급하는 HttpOnly 쿠키를 사용합니다. 로그인한 사용자의 프로필은 `GET /auth/getme`로 조회합니다. `NEXT_PUBLIC_API_URL`이 없거나 서버 요청에 실패하면 화면에 오류를 표시하며, 샘플 데이터로 대신하지 않습니다.
+로그인은 기존 도담도담 OAuth 인증을 사용합니다. 로그인한 사용자의 프로필은 `GET /auth/getme`로 조회합니다. `NEXT_PUBLIC_API_URL`이 없거나 서버 요청에 실패하면 화면에 오류를 표시하며, 샘플 데이터로 대신하지 않습니다.
 
 주요 기능:
 
@@ -30,10 +30,9 @@
 
 ### 2.1 로그인
 
-- 사용자는 사용자 이름(username)과 이름(name)으로 로그인한다.
-- 처음 로그인한 username은 자동 가입되며, 이후 같은 username에는 같은 name을 사용해야 한다.
-- 성공 시 서버가 accessToken·refreshToken HttpOnly 쿠키를 발급한다.
-- 로그인 프로필은 `POST /auth/login` 응답 또는 `GET /auth/getme`로 조회한다.
+- 사용자는 도담도담 OAuth 제공자를 통해 로그인한다.
+- OAuth 인증 코드는 `/verify` 콜백에서 처리하고, 기존 OAuth 환경 변수와 PKCE 검증 흐름을 사용한다.
+- 로그인 프로필은 `GET /auth/getme`로 조회한다.
 
 기대 동작:
 
@@ -266,7 +265,7 @@ export type CreateMatchPayload = {
 
 ## 6. 참고사항
 
-- 배포 환경에 `NEXT_PUBLIC_API_URL`을 설정해야 한다.
+- 배포 환경에 `NEXT_PUBLIC_API_URL` 및 기존 도담도담 OAuth 환경 변수를 설정해야 한다.
 - `startAt`을 `date` + `time`으로 조합하는 로직을 서버에서도 동일하게 맞춰야 한다.
 - A/B 팀 배정은 필수 데이터이며 UI는 좌우 컬럼으로 표시한다.
 - 서버는 매치 참가자의 `team` 값을 보장해야 한다.
