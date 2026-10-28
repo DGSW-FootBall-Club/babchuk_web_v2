@@ -2,9 +2,8 @@
 
 ## 1. 프로젝트 개요
 
-Babchuk Web v2는 축구 매치 생성, 조회, 신청 기능을 제공하는 웹 서비스입니다. 매치 화면은 `NEXT_PUBLIC_API_URL`에 설정된 서버 API를 사용하며, 로컬 mock 데이터로 대체하지 않습니다. 로그인한 사용자의 프로필은 `GET /auth/getme`로 조회해 Zustand 스토어에 보관합니다.
 
-서버 API와 OAuth 설정이 필요합니다. `NEXT_PUBLIC_API_URL`이 없거나 서버 요청에 실패하면 화면에 오류를 표시하며, 샘플 데이터로 대신하지 않습니다.
+로그인은 `/auth/login`으로 username/name을 전송하고, 서버가 발급하는 HttpOnly 쿠키를 사용합니다. 로그인한 사용자의 프로필은 `GET /auth/getme`로 조회합니다. `NEXT_PUBLIC_API_URL`이 없거나 서버 요청에 실패하면 화면에 오류를 표시하며, 샘플 데이터로 대신하지 않습니다.
 
 주요 기능:
 
@@ -31,9 +30,10 @@ Babchuk Web v2는 축구 매치 생성, 조회, 신청 기능을 제공하는 �
 
 ### 2.1 로그인
 
-- 사용자는 OAuth 제공자를 통해 로그인한다.
-- OAuth 인증 코드는 서버의 `/auth/token`에서 교환하며, 인증 쿠키는 브라우저에 저장된다.
-- 로그인 프로필은 `GET /auth/getme`를 통해 서버에서 조회한다.
+- 사용자는 사용자 이름(username)과 이름(name)으로 로그인한다.
+- 처음 로그인한 username은 자동 가입되며, 이후 같은 username에는 같은 name을 사용해야 한다.
+- 성공 시 서버가 accessToken·refreshToken HttpOnly 쿠키를 발급한다.
+- 로그인 프로필은 `POST /auth/login` 응답 또는 `GET /auth/getme`로 조회한다.
 
 기대 동작:
 
@@ -174,21 +174,20 @@ export type Profile = {
     userId: string;
     username: string;
     name: string;
-    participatedMatchIds: string[];
-    currentMatchIds: string[];
-    profileImage: string | null;
+    participatedMatchIds?: string[];
+    currentMatchIds?: string[];
+    profileImage?: string | null;
 };
 
-export type User = {
-    id?: string;
-    userId?: string;
+export type UserRequest = {
     username: string;
     name: string;
+};
+
+export type MatchUser = UserRequest & {
+    userId?: string;
     team?: TeamType;
     profileImage?: string | null;
-    currentMatchIds?: string[];
-    participatedMatchIds?: string[];
-    joinedMatchIds?: string[];
 };
 ```
 
@@ -197,12 +196,12 @@ export type User = {
 - `userId`: 사용자 고유 ID (`Profile`에서 필수)
 - `username`: 사용자 식별용 이름
 - `name`: 사용자 이름
-- `participatedMatchIds`: 참가 완료한 매치 ID 목록
-- `currentMatchIds`: 현재 참가 중인 매치 ID 목록
+- `participatedMatchIds`: 참가 완료한 매치 ID 목록 (선택 필드)
+- `currentMatchIds`: 현재 참가 중인 매치 ID 목록 (선택 필드)
 - `profileImage`: 프로필 이미지 URL. 이미지가 없으면 `null`
 - `team`: 매치 내부 팀 구분, 값은 `A` 또는 `B`
 
-매치 작성자 및 참여자는 `User` 형태로 전달한다. 매치 참가 이력과 프로필 상세 정보는 `Profile`에 정의되어 있고, 매치 API 응답에 해당 데이터가 포함되는지는 서버 계약에 따라야 한다.
+요청 본문에는 `UserRequest`를 사용하고, 매치 응답의 작성자와 참여자에는 `MatchUser`를 사용한다. 프로필 응답은 별도의 `Profile` 타입이다.
 
 ### 3.2 Match
 
@@ -217,8 +216,8 @@ export type Match = {
     status: MatchStatus;
     date: string;
     time: string;
-    author: User;
-    users: User[];
+    author: MatchUser;
+    users: MatchUser[];
 };
 ```
 
@@ -236,14 +235,13 @@ export type CreateMatchPayload = {
     title: string;
     maxPlayers: number;
     startAt: string;
-    author: User;
+    author: UserRequest;
 };
 ```
 
 주의:
 
-- `startAt`은 ISO 문자열 포맷으로 전달한다.
-- 예: `2026-10-03T18:00`
+- 작성자 이름과 사용자 이름은 로그인한 사용자의 프로필과 일치해야 한다.
 
 ---
 
@@ -255,8 +253,9 @@ export type CreateMatchPayload = {
 ## 5. 구현 개요
 
 - 매치 목록, 상세, 생성, 참가 요청은 `lib/api/match.ts`에서 서버 API를 호출한다.
-- 인증된 프로필은 `lib/api/profile.ts`에서 조회한다.
-- API 요청은 쿠키 인증 및 401 토큰 갱신을 위해 공통 `lib/api.ts`를 사용한다.
+- 로그인, 로그아웃, 인증된 프로필 조회는 `lib/api/profile.ts`에서 처리한다.
+- 공개 조회 요청은 로그인이나 토큰 갱신 없이 호출한다. 인증이 필요한 요청에서만 401 토큰 갱신을 시도한다.
+- API 요청은 쿠키 인증을 위해 공통 `lib/api.ts`에서 `credentials: "include"`로 호출한다.
 - `NEXT_PUBLIC_API_URL`은 서버 API의 base URL이며 끝의 `/`는 제거된다.
 - 서버 API가 준비되지 않았거나 요청이 실패하면 로딩 오류를 표시하고 재시도할 수 있다. 개발용 mock fallback은 없다.
 
@@ -264,7 +263,7 @@ export type CreateMatchPayload = {
 
 ## 6. 참고사항
 
-- `NEXT_PUBLIC_API_URL`과 OAuth 환경 변수를 배포 환경에 설정해야 한다.
+- 배포 환경에 `NEXT_PUBLIC_API_URL`을 설정해야 한다.
 - `startAt`을 `date` + `time`으로 조합하는 로직을 서버에서도 동일하게 맞춰야 한다.
 - A/B 팀 배정은 필수 데이터이며 UI는 좌우 컬럼으로 표시한다.
 - 서버는 매치 참가자의 `team` 값을 보장해야 한다.

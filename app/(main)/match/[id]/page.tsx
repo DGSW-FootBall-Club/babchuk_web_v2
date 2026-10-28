@@ -7,7 +7,7 @@ import { joinMatch } from "@/lib/api/match";
 import Stadium from "@/public/stadium.svg";
 import { useProfileStore } from "@/stores/profileStore";
 import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -42,7 +42,6 @@ function MatchPageSkeleton() {
 
 function MatchPageContent() {
     const { id } = useParams<{ id: string }>();
-    const router = useRouter();
     const { match, isLoading, error, refresh } = useMatch(id);
     const profile = useProfileStore((state) => state.profile);
     const [isJoining, setIsJoining] = useState(false);
@@ -51,12 +50,12 @@ function MatchPageContent() {
         match?.status === "full" ||
         (match !== null && match.currentPlayers >= match.maxPlayers);
     const alreadyJoined =
-        didJoin || profile?.currentMatchIds.includes(id) === true;
+        didJoin || profile?.currentMatchIds?.includes(id) === true;
 
     const handleJoinMatch = async () => {
         if (!match) return;
         if (!profile) {
-            router.push("/login");
+            toast.error("참가 신청은 로그인 후 이용할 수 있습니다.");
             return;
         }
         if (isFull) {

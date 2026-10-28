@@ -1,63 +1,38 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-
-function base64Url(bytes: Uint8Array) {
-    return btoa(String.fromCharCode(...bytes))
-        .replace(/\+/g, "-")
-        .replace(/\//g, "_")
-        .replace(/=+$/, "");
-}
+import { useProfileStore } from "@/stores/profileStore";
 
 export default function useLogin() {
-    const login = async () => {
+    const router = useRouter();
+    const signIn = useProfileStore((state) => state.login);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const login = async (username: string, name: string) => {
+        const credentials = {
+            username: username.trim(),
+            name: name.trim(),
+        };
+        if (!credentials.username || !credentials.name) {
+            toast.error("이름과 사용자 이름을 입력해주세요.");
+            return;
+        }
+
+        setIsSubmitting(true);
         try {
-            const authorizeUrl = process.env.NEXT_PUBLIC_OAUTH_AUTHORIZE_URL;
-            const clientId = process.env.NEXT_PUBLIC_OAUTH_CLIENT_ID;
-            const redirectUri = process.env.NEXT_PUBLIC_OAUTH_REDIRECT_URI;
-            const scope = process.env.NEXT_PUBLIC_OAUTH_SCOPE;
-
-            if (!authorizeUrl || !clientId || !redirectUri || !scope) {
-                throw new Error("OAuth 환경 변수가 설정되지 않았습니다.");
-            }
-
-            const verifier = base64Url(
-                crypto.getRandomValues(new Uint8Array(32)),
-            );
-            const digest = await crypto.subtle.digest(
-                "SHA-256",
-                new TextEncoder().encode(verifier),
-            );
-            const challenge = base64Url(new Uint8Array(digest));
-            const state = crypto.randomUUID();
-
-            sessionStorage.setItem("code_verifier", verifier);
-            sessionStorage.setItem("oauth_state", state);
-
-            const params = new URLSearchParams({
-                response_type: "code",
-                client_id: clientId,
-                redirect_uri: redirectUri,
-                scope,
-                state,
-                code_challenge: challenge,
-                code_challenge_method: "S256",
-            });
-
-            toast.success("로그인 페이지로 이동합니다.");
-            window.location.href = `${authorizeUrl}?${params}`;
+            await signIn(credentials);
+            toast.success("로그인되었습니다.");
+            router.replace("/");
         } catch (error) {
-            console.error(
-                "[Auth] Login setup failed:",
-                error instanceof Error ? error.message : "Unknown error",
-            );
             toast.error(
-                error instanceof Error
-                    ? error.message
-                    : "로그인 준비에 실패했습니다.",
+                error instanceof Error ? error.message : "로그인에 실패했어요.",
             );
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
-    return { login };
+    return { login, isSubmitting };
 }

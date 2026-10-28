@@ -4,10 +4,25 @@ import logo from "@/public/logo.svg";
 import Image from "next/image";
 import Link from "next/link";
 import { useProfileStore } from "@/stores/profileStore";
+import toast from "react-hot-toast";
 
 export default function Topbar() {
     const profile = useProfileStore((state) => state.profile);
     const isLoading = useProfileStore((state) => state.isLoading);
+    const logout = useProfileStore((state) => state.logout);
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            toast.success("로그아웃되었습니다.");
+        } catch (error) {
+            toast.error(
+                error instanceof Error
+                    ? error.message
+                    : "로그아웃에 실패했어요.",
+            );
+        }
+    };
 
     return (
         <header className="sticky top-0 z-50 h-16 w-full bg-white shadow-sm sm:h-20">
@@ -26,9 +41,18 @@ export default function Topbar() {
                     {isLoading ? (
                         <span className="text-slate-500">확인 중...</span>
                     ) : profile ? (
-                        <Link href="/profile" className="cursor-pointer">
-                            {profile.name}
-                        </Link>
+                        <>
+                            <Link href="/profile" className="cursor-pointer">
+                                {profile.name}
+                            </Link>
+                            <button
+                                type="button"
+                                onClick={() => void handleLogout()}
+                                className="cursor-pointer"
+                            >
+                                로그아웃
+                            </button>
+                        </>
                     ) : (
                         <Link href="/login" className="cursor-pointer">
                             로그인

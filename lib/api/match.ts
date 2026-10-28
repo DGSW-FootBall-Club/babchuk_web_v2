@@ -1,6 +1,6 @@
 import { ApiError, api } from "@/lib/api";
 import type { CreateMatchPayload, Match } from "@/types/match.type";
-import type { User } from "@/types/user.type";
+import type { UserRequest } from "@/types/user.type";
 
 export function createMatch(payload: CreateMatchPayload) {
     return api<Match>("/matches", {
@@ -24,7 +24,7 @@ export function getMatchList() {
     return api<Match[]>("/matches");
 }
 
-export function joinMatch(id: string, user: Pick<User, "name" | "username">) {
+export function joinMatch(id: string, user: UserRequest) {
     return api<Pick<Match, "id" | "currentPlayers" | "status">>(
         `/matches/${encodeURIComponent(id)}/join`,
         {

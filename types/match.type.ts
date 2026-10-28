@@ -1,4 +1,4 @@
-import type { User } from "./user.type";
+import type { MatchUser, UserRequest } from "./user.type";
 
 export type MatchStatus = "pending" | "full";
 
@@ -10,13 +10,13 @@ export type Match = {
     status: MatchStatus;
     date: string;
     time: string;
-    author: User;
-    users: User[];
+    author: MatchUser;
+    users: MatchUser[];
 };
 
 export type CreateMatchPayload = {
     title: string;
     maxPlayers: number;
     startAt: string;
-    author: User;
+    author: UserRequest;
 };

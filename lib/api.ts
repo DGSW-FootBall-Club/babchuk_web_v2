@@ -1,6 +1,14 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL?.replace(/\/+$/, "");
 
-const NO_REFRESH = ["/auth/token", "/auth/refresh"];
+const NO_REFRESH = ["/auth/login", "/auth/logout", "/auth/refresh"];
+
+function requiresAuthentication(path: string, method: string) {
+    return (
+        (path === "/auth/getme" && method === "GET") ||
+        (path === "/matches" && method === "POST") ||
+        (/^\/matches\/[^/]+\/join$/.test(path) && method === "POST")
+    );
+}
 
 export class ApiError extends Error {
     constructor(
@@ -74,9 +82,12 @@ export async function api<T = unknown>(
             });
         };
 
+        const method = (init.method ?? "GET").toUpperCase();
+        const shouldRefresh =
+            requiresAuthentication(path, method) && !NO_REFRESH.includes(path);
         let res = await request();
 
-        if (res.status === 401 && !NO_REFRESH.includes(path)) {
+        if (res.status === 401 && shouldRefresh) {
             const ok = await refreshToken();
             if (!ok) {
                 throw new ApiError(401);

@@ -19,7 +19,7 @@ export default function HoloCard({
     return (
         <Link
             href={router}
-            className="holo-card flex min-h-[16rem] flex-col gap-3 rounded-xl bg-white/80 p-5 shadow-md sm:min-h-[20rem] sm:gap-4 sm:p-8"
+            className="holo-card flex h-64 self-start flex-col gap-3 rounded-xl bg-white/80 p-5 shadow-md sm:h-80 sm:gap-4 sm:p-8"
         >
             <h2 className="text-2xl font-bold sm:text-3xl xl:text-4xl">
                 {title}
