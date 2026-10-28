@@ -7,7 +7,7 @@ import HistoryCard from "@/components/home/HistoryCard";
 export default function Home() {
     return (
         <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-0 sm:gap-8">
-            <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+            <section className="min-h-128 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
                 <HoloCard
                     title="매치 생성"
                     description="축구 경기를 생성하세요!"

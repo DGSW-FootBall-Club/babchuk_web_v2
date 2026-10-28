@@ -13,7 +13,7 @@ export default function UpcomingMatches() {
                     <div
                         key={index}
                         aria-hidden="true"
-                        className="flex min-h-32 items-center justify-between gap-2 rounded-lg bg-white p-4 shadow-md sm:gap-4 sm:p-5"
+                        className="flex items-center justify-between gap-2 rounded-lg bg-white p-4 shadow-md sm:gap-4 sm:p-5"
                     >
                         <div className="h-16 flex-1 animate-pulse rounded-lg bg-slate-100" />
                         <div className="h-10 flex-1 animate-pulse rounded-lg bg-slate-100" />
@@ -36,23 +36,25 @@ export default function UpcomingMatches() {
                     예정된 매치가 없어요.
                 </div>
             ) : (
-                matches.slice(0, 3).map((match) => (
-                    <MatchCard
-                        key={match.id}
-                        id={match.id}
-                        redteam={
-                            match.users.filter((user) => user.team === "A")
-                                .length
-                        }
-                        blueteam={
-                            match.users.filter((user) => user.team === "B")
-                                .length
-                        }
-                        status={match.status}
-                        date={match.date}
-                        time={match.time}
-                    />
-                ))
+                matches
+                    .slice(0, 3)
+                    .map((match) => (
+                        <MatchCard
+                            key={match.id}
+                            id={match.id}
+                            redteam={
+                                match.users.filter((user) => user.team === "A")
+                                    .length
+                            }
+                            blueteam={
+                                match.users.filter((user) => user.team === "B")
+                                    .length
+                            }
+                            status={match.status}
+                            date={match.date}
+                            time={match.time}
+                        />
+                    ))
             )}
         </div>
     );
