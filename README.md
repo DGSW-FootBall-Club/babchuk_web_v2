@@ -2,7 +2,7 @@
 
 ## 1. 프로젝트 개요
 
-
+Babchuk Web v2는 축구 매치 생성, 조회, 신청 기능을 제공하는 웹 서비스입니다.
 로그인은 기존 도담도담 OAuth 인증을 사용합니다. 로그인한 사용자의 프로필은 `GET /auth/getme`로 조회합니다. `NEXT_PUBLIC_API_URL`이 없거나 서버 요청에 실패하면 화면에 오류를 표시하며, 샘플 데이터로 대신하지 않습니다.
 
 주요 기능:
@@ -292,10 +292,11 @@ export type CreateMatchPayload = {
 
 ---
 
-## 4. Server integration overview
+## 4. 서버 연동 개요
 
-- The application uses server APIs for match and profile data.
-- Authentication and authorization must be enforced by the server.
+- 매치와 프로필 데이터는 서버 API를 통해 조회·변경한다.
+- 인증 쿠키는 브라우저에서 자동 전송하며, 민감한 값이나 실제 토큰을 문서에 기록하지 않는다.
+- 서버는 모든 매치 관리 요청에서 인증 및 방장 권한을 검증해야 한다.
 
 ## 5. 구현 개요
 
