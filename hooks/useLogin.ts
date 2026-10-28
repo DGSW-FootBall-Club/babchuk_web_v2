@@ -47,6 +47,10 @@ export default function useLogin() {
             toast.success("로그인 페이지로 이동합니다.");
             window.location.href = `${authorizeUrl}?${params}`;
         } catch (error) {
+            console.error(
+                "[Auth] Login setup failed:",
+                error instanceof Error ? error.message : "Unknown error",
+            );
             toast.error(
                 error instanceof Error
                     ? error.message

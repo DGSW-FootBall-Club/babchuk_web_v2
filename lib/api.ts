@@ -25,8 +25,22 @@ function refreshToken(): Promise<boolean> {
         method: "POST",
         credentials: "include",
     })
-        .then((res) => res.ok)
-        .catch(() => false)
+        .then((res) => {
+            if (!res.ok) {
+                console.error(
+                    "[API] POST /auth/refresh failed:",
+                    `HTTP ${res.status}`,
+                );
+            }
+            return res.ok;
+        })
+        .catch((error: unknown) => {
+            console.error(
+                "[API] POST /auth/refresh failed:",
+                error instanceof Error ? error.message : "Unknown error",
+            );
+            return false;
+        })
         .finally(() => {
             refreshing = null;
         });
@@ -37,48 +51,61 @@ export async function api<T = unknown>(
     path: string,
     init: RequestInit = {},
 ): Promise<T> {
-    if (!BASE_URL) {
-        throw new Error("NEXT_PUBLIC_API_URL 환경 변수가 설정되지 않았습니다.");
-    }
-
-    const request = () => {
-        const headers = new Headers(init.headers);
-        if (
-            init.body &&
-            !(init.body instanceof FormData) &&
-            !headers.has("Content-Type")
-        ) {
-            headers.set("Content-Type", "application/json");
+    try {
+        if (!BASE_URL) {
+            throw new Error(
+                "NEXT_PUBLIC_API_URL 환경 변수가 설정되지 않았습니다.",
+            );
         }
-        return fetch(`${BASE_URL}${path}`, {
-            ...init,
-            headers,
-            credentials: "include",
-        });
-    };
 
-    let res = await request();
-
-    if (res.status === 401 && !NO_REFRESH.includes(path)) {
-        const ok = await refreshToken();
-        if (!ok) {
+        const request = () => {
+            const headers = new Headers(init.headers);
             if (
-                typeof window !== "undefined" &&
-                window.location.pathname !== "/login"
+                init.body &&
+                !(init.body instanceof FormData) &&
+                !headers.has("Content-Type")
             ) {
-                window.location.href = "/login";
+                headers.set("Content-Type", "application/json");
             }
-            throw new ApiError(401);
+            return fetch(`${BASE_URL}${path}`, {
+                ...init,
+                headers,
+                credentials: "include",
+            });
+        };
+
+        let res = await request();
+
+        if (res.status === 401 && !NO_REFRESH.includes(path)) {
+            const ok = await refreshToken();
+            if (!ok) {
+                if (
+                    typeof window !== "undefined" &&
+                    window.location.pathname !== "/login"
+                ) {
+                    window.location.href = "/login";
+                }
+                throw new ApiError(401);
+            }
+            res = await request();
         }
-        res = await request(); // 원래 요청 재시도
-    }
 
-    if (!res.ok) {
-        const body = await res.json().catch(() => undefined);
-        throw new ApiError(res.status, body);
-    }
+        if (!res.ok) {
+            const body = await res.json().catch(() => undefined);
+            throw new ApiError(res.status, body);
+        }
 
-    if (res.status === 204) return undefined as T;
-    const text = await res.text();
-    return (text ? JSON.parse(text) : undefined) as T;
+        if (res.status === 204) return undefined as T;
+        const text = await res.text();
+        return (text ? JSON.parse(text) : undefined) as T;
+    } catch (error) {
+        const detail =
+            error instanceof ApiError
+                ? `HTTP ${error.status}: ${error.message}`
+                : error instanceof Error
+                  ? error.message
+                  : "Unknown error";
+        console.error(`[API] ${path} failed:`, detail);
+        throw error;
+    }
 }
